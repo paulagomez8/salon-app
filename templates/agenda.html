@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
+
+        .topbar {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .topbar h1 { font-size: 18px; font-weight: 600; }
+        .btn-nueva {
+            background: #378ADD;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn-nueva:hover { background: #185FA5; }
+
+        .nav-fecha {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .nav-fecha button {
+            background: none;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .nav-fecha button:hover { background: #f5f5f5; }
+        .nav-fecha span {
+            font-size: 16px;
+            font-weight: 500;
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .agenda {
+            max-width: 700px;
+            margin: 24px auto;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+        /* Contenedor principal con posicionamiento por minutos */
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            position: relative;
+        }
+
+        /* Columna de horas */
+        .horas-col {
+            border-right: 1px solid #f0f0f0;
+        }
+        .hora-label {
+            height: 60px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            align-items: flex-start;
+            padding-top: 6px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .hora-label:last-child { border-bottom: none; }
+
+        /* Columna de contenido con posicionamiento absoluto */
+        .contenido-col {
+            position: relative;
+            /* 11 franjas de 60px cada una (08:00 a 19:00 = 11 horas) */
+            height: 660px;
+        }
+
+        /* Líneas de fondo cada hora */
+        .linea-hora {
+            position: absolute;
+            left: 0; right: 0;
+            height: 60px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* Citas posicionadas por minutos */
+        .cita {
+            position: absolute;
+            left: 6px;
+            right: 6px;
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: opacity 0.15s;
+            overflow: hidden;
+            min-height: 24px;
+        }
+        .cita:hover { opacity: 0.85; }
+        .cita.pendiente  { background: #E6F1FB; border-left: 3px solid #378ADD; }
+        .cita.confirmada { background: #EAF3DE; border-left: 3px solid #639922; }
+        .cita.completada { background: #F1EFE8; border-left: 3px solid #888780; }
+        .cita.cancelada  { background: #FCEBEB; border-left: 3px solid #E24B4A; }
+
+        .cita-nombre   { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .cita-servicio { font-size: 12px; opacity: 0.75; }
+        .cita-hora     { font-size: 11px; opacity: 0.6; }
+
+        /* Bloqueos */
+        .bloqueo {
+            position: absolute;
+            left: 6px;
+            right: 6px;
+            border-radius: 8px;
+            background: repeating-linear-gradient(
+                45deg,
+                #f5f5f5,
+                #f5f5f5 6px,
+                #ebebeb 6px,
+                #ebebeb 12px
+            );
+            border-left: 3px solid #ccc;
+            padding: 6px 10px;
+            overflow: hidden;
+            min-height: 24px;
+        }
+        .bloqueo-texto {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .leyenda {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            padding: 16px;
+            flex-wrap: wrap;
+        }
+        .leg-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
+        .leg-dot  { width: 10px; height: 10px; border-radius: 2px; }
+
+        /* Modal nueva cita */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 420px;
+            margin: 16px;
+        }
+        .modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .form-group textarea { resize: vertical; height: 70px; }
+        .modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+        .btn-cancelar {
+            background: none;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .btn-guardar {
+            background: #378ADD;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .sin-slots {
+            font-size: 13px;
+            color: #E24B4A;
+            padding: 8px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <h1>Salon App 💅</h1>
+    <button class="btn-nueva" onclick="abrirModal()">+ Nueva cita</button>
+</div>
+
+<div class="nav-fecha">
+    <button onclick="cambiarDia(-1)">←</button>
+    <span id="fechaTexto"></span>
+    <button onclick="cambiarDia(1)">→</button>
+</div>
+
+<div class="agenda" id="agenda"></div>
+
+<div class="leyenda">
+    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div> Pendiente</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div> Confirmada</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#888780"></div> Completada</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div> Cancelada</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ccc"></div> Bloqueado</div>
+</div>
+
+<!-- Modal nueva cita -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2>Nueva cita</h2>
+        <div class="form-group">
+            <label>Cliente</label>
+            <select id="selectCliente"></select>
+        </div>
+        <div class="form-group">
+            <label>Servicio</label>
+            <select id="selectServicio" onchange="actualizarHoras()"></select>
+        </div>
+        <div class="form-group">
+            <label>Hora disponible</label>
+            <select id="selectHora"></select>
+            <div id="sinSlots" class="sin-slots" style="display:none">No hay horarios disponibles para este servicio</div>
+        </div>
+        <div class="form-group">
+            <label>Notas</label>
+            <textarea id="inputNotas" placeholder="Opcional..."></textarea>
+        </div>
+        <div class="modal-btns">
+            <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn-guardar" onclick="guardarCita()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const HORA_INICIO = 8   // 08:00
+const HORA_FIN    = 19  // 19:00
+const PX_POR_MIN  = 1   // 60px por hora = 1px por minuto
+const HORAS_GRID  = Array.from({length: HORA_FIN - HORA_INICIO}, (_, i) => {
+    const h = HORA_INICIO + i
+    return `${String(h).padStart(2,'0')}:00`
+})
+
+const DIAS  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
+
+let fechaActual = new Date()
+let citas     = []
+let clientes  = []
+let servicios = []
+let bloqueos  = []
+
+function formatearFecha(d) {
+    return `${DIAS[d.getDay()]} ${d.getDate()} de ${MESES[d.getMonth()]} ${d.getFullYear()}`
+}
+
+function fechaISO(d) {
+    // Usa fecha local para evitar desfase por timezone
+    const y = d.getFullYear()
+    const m = String(d.getMonth()+1).padStart(2,'0')
+    const dd = String(d.getDate()).padStart(2,'0')
+    return `${y}-${m}-${dd}`
+}
+
+function horaAMinutos(h) {
+    const [hh, mm] = h.split(':').map(Number)
+    return hh * 60 + mm
+}
+
+function minutosDesdeInicio(minutos) {
+    return (minutos - HORA_INICIO * 60) * PX_POR_MIN
+}
+
+function cambiarDia(n) {
+    fechaActual.setDate(fechaActual.getDate() + n)
+    document.getElementById('fechaTexto').textContent = formatearFecha(fechaActual)
+    renderAgenda()
+}
+
+function renderAgenda() {
+    const hoy = fechaISO(fechaActual)
+    const diaSemana = fechaActual.getDay() === 0 ? 7 : fechaActual.getDay() // 1=Lun..6=Sáb, 7=Dom
+
+    const citasHoy = citas.filter(c => c.fecha_hora.startsWith(hoy))
+
+    // Bloqueos del día: puntuales o recurrentes
+    const bloqueosHoy = bloqueos.filter(b =>
+        b.fecha === hoy || b.dia_semana === diaSemana
+    )
+
+    const agenda = document.getElementById('agenda')
+
+    // Líneas de fondo por hora
+    const lineas = HORAS_GRID.map((hora, i) => `
+        <div class="linea-hora" style="top:${i*60}px"></div>
+    `).join('')
+
+    // Renderizar citas
+    const citasHTML = citasHoy.map(c => {
+        const fechaHoraStr = c.fecha_hora.replace(' ', 'T')
+        const horaStr = c.fecha_hora.includes('T')
+            ? c.fecha_hora.split('T')[1].substring(0,5)
+            : c.fecha_hora.split(' ')[1].substring(0,5)
+
+        const servicio = servicios.find(s => s.id === c.servicio_id)
+        const duracion = servicio ? servicio.duracion_minutos : 60
+
+        const inicioMin = horaAMinutos(horaStr)
+        const top  = minutosDesdeInicio(inicioMin)
+        const alto = duracion * PX_POR_MIN
+
+        return `
+        <div class="cita ${c.estado}" style="top:${top}px; height:${alto}px"
+             onclick="cambiarEstado(${c.id}, '${c.estado}')">
+            <div class="cita-hora">${horaStr}</div>
+            <div class="cita-nombre">${c.cliente_nombre}</div>
+            <div class="cita-servicio">${c.servicio_nombre} · ${duracion} min</div>
+        </div>`
+    }).join('')
+
+    // Renderizar bloqueos
+    const bloqueosHTML = bloqueosHoy.map(b => {
+        const inicioMin = horaAMinutos(b.hora_inicio)
+        const finMin    = horaAMinutos(b.hora_fin)
+        const top  = minutosDesdeInicio(inicioMin)
+        const alto = (finMin - inicioMin) * PX_POR_MIN
+
+        return `
+        <div class="bloqueo" style="top:${top}px; height:${alto}px">
+            <div class="bloqueo-texto">🔒 ${b.nota || 'Bloqueado'}</div>
+        </div>`
+    }).join('')
+
+    agenda.innerHTML = `
+        <div class="agenda-grid">
+            <div class="horas-col">
+                ${HORAS_GRID.map(h => `<div class="hora-label">${h}</div>`).join('')}
+            </div>
+            <div class="contenido-col">
+                ${lineas}
+                ${bloqueosHTML}
+                ${citasHTML}
+            </div>
+        </div>
+    `
+}
+
+async function cargarDatos() {
+    const [rCitas, rClientes, rServicios, rBloqueos] = await Promise.all([
+        fetch('/citas').then(r => r.json()),
+        fetch('/clientes').then(r => r.json()),
+        fetch('/servicios').then(r => r.json()),
+        fetch('/bloqueos').then(r => r.json())
+    ])
+    citas     = rCitas     || []
+    clientes  = rClientes  || []
+    servicios = rServicios || []
+    bloqueos  = rBloqueos  || []
+
+    document.getElementById('selectCliente').innerHTML =
+        clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')
+    document.getElementById('selectServicio').innerHTML =
+        servicios.map(s => `<option value="${s.id}" data-duracion="${s.duracion_minutos}">${s.nombre} (${s.duracion_minutos} min)</option>`).join('')
+
+    renderAgenda()
+}
+
+async function actualizarHoras() {
+    const servicioId = document.getElementById('selectServicio').value
+    const fecha      = fechaISO(fechaActual)
+    const selectHora = document.getElementById('selectHora')
+    const sinSlots   = document.getElementById('sinSlots')
+
+    selectHora.innerHTML = '<option>Cargando...</option>'
+
+    const slots = await fetch(`/disponibilidad?fecha=${fecha}&servicio_id=${servicioId}`)
+        .then(r => r.json()).catch(() => [])
+
+    if (!slots || slots.length === 0) {
+        selectHora.innerHTML = ''
+        selectHora.style.display = 'none'
+        sinSlots.style.display = 'block'
+    } else {
+        selectHora.style.display = 'block'
+        sinSlots.style.display = 'none'
+        selectHora.innerHTML = slots.map(h => `<option value="${h}">${h}</option>`).join('')
+    }
+}
+
+function abrirModal() {
+    document.getElementById('modalOverlay').classList.add('visible')
+    actualizarHoras()
+}
+
+function cerrarModal() {
+    document.getElementById('modalOverlay').classList.remove('visible')
+}
+
+async function guardarCita() {
+    const clienteId  = parseInt(document.getElementById('selectCliente').value)
+    const servicioId = parseInt(document.getElementById('selectServicio').value)
+    const hora       = document.getElementById('selectHora').value
+    const notas      = document.getElementById('inputNotas').value
+
+    if (!hora) {
+        alert('No hay horarios disponibles para este servicio')
+        return
+    }
+
+    const fechaHora = `${fechaISO(fechaActual)} ${hora}:00`
+
+    const res = await fetch('/citas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            cliente_id:  clienteId,
+            empleada_id: 1,
+            servicio_id: servicioId,
+            fecha_hora:  fechaHora,
+            notas:       notas
+        })
+    })
+
+    if (res.ok) {
+        cerrarModal()
+        await cargarDatos()
+    } else {
+        alert('Error al guardar la cita')
+    }
+}
+
+async function cambiarEstado(id, estadoActual) {
+    const estados = ['pendiente', 'confirmada', 'completada', 'cancelada']
+    const siguiente = estados[(estados.indexOf(estadoActual) + 1) % estados.length]
+    const ok = confirm(`Cambiar estado a: ${siguiente}?`)
+    if (!ok) return
+
+    await fetch(`/citas/${id}/estado`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado: siguiente })
+    })
+    await cargarDatos()
+}
+
+document.getElementById('fechaTexto').textContent = formatearFecha(fechaActual)
+cargarDatos()
+</script>
+</body>
+</html>

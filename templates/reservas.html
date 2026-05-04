@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réserver · Clémence Votre Salon Privé</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+   <style>
+:root {
+    --noir: #fdf9f7;
+    --blanc: #2a1f1a;
+    --gris: #8a7060;
+    --gris-clair: #e8ddd8;
+    --or: #b8935a;
+    --or-dark: #9e7b47;
+    --error: #a03020;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Raleway', sans-serif;
+    background: var(--noir);
+    color: var(--blanc);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 60px;
+    background: rgba(253,249,247,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(184,147,90,0.15);
+}
+.nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--blanc);
+    text-decoration: none;
+}
+.nav-back {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--or);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: opacity 0.3s;
+}
+.nav-back:hover { opacity: 0.7; }
+.nav-back svg { width: 14px; height: 14px; }
+
+/* ── FONDO DECORATIVO ── */
+.bg-deco {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+.bg-deco::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(184,147,90,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(184,147,90,0.05) 1px, transparent 1px);
+    background-size: 80px 80px;
+}
+.bg-deco::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 60vh;
+    background: radial-gradient(ellipse at 70% 0%, rgba(184,147,90,0.06) 0%, transparent 60%);
+}
+
+/* ── CONTAINER PRINCIPAL ── */
+.page-wrap {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    padding: 140px 60px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ── HEADER ── */
+.page-header {
+    text-align: center;
+    margin-bottom: 64px;
+}
+.page-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--or);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+.page-eyebrow::before,
+.page-eyebrow::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background: var(--or);
+}
+.page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 300;
+    line-height: 1;
+    margin-bottom: 16px;
+    color: var(--blanc);
+}
+.page-title em { font-style: italic; color: var(--or); }
+.page-subtitle {
+    font-size: 13px;
+    color: rgba(42,31,26,0.45);
+    letter-spacing: 0.05em;
+    font-weight: 300;
+}
+
+/* ── PASOS ── */
+.steps-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 64px;
+}
+.step-dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: default;
+}
+.step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(184,147,90,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: rgba(42,31,26,0.3);
+    transition: all 0.4s ease;
+}
+.step-dot.active .step-circle {
+    border-color: var(--or);
+    color: var(--or);
+    background: rgba(184,147,90,0.08);
+}
+.step-dot.done .step-circle {
+    border-color: var(--or);
+    background: var(--or);
+    color: #fdf9f7;
+}
+.step-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(42,31,26,0.35);
+    transition: color 0.4s;
+    white-space: nowrap;
+}
+.step-dot.active .step-label { color: var(--or); }
+.step-dot.done .step-label { color: rgba(184,147,90,0.7); }
+.step-line {
+    width: 80px;
+    height: 1px;
+    background: rgba(184,147,90,0.15);
+    margin-bottom: 24px;
+    transition: background 0.4s;
+}
+.step-line.done { background: rgba(184,147,90,0.45); }
+
+/* ── CARD ── */
+.card {
+    width: 100%;
+    max-width: 720px;
+    background: rgba(245,237,232,0.6);
+    border: 1px solid rgba(184,147,90,0.15);
+    padding: 56px;
+    position: relative;
+}
+.card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 40px;
+    width: 60px;
+    height: 1px;
+    background: var(--or);
+}
+
+/* ── STEP PANELS ── */
+.step-panel { display: none; }
+.step-panel.active { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    margin-bottom: 8px;
+    color: var(--blanc);
+}
+.panel-title em { font-style: italic; color: var(--or); }
+.panel-desc {
+    font-size: 12px;
+    color: rgba(42,31,26,0.45);
+    margin-bottom: 40px;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+}
+
+/* ── SERVICIOS GRID ── */
+.servicios-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(184,147,90,0.12);
+    border: 1px solid rgba(184,147,90,0.12);
+}
+.servicio-opt {
+    background: rgba(253,249,247,0.9);
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: background 0.25s;
+    position: relative;
+}
+.servicio-opt:hover { background: rgba(184,147,90,0.07); }
+.servicio-opt.selected {
+    background: rgba(184,147,90,0.1);
+    outline: 1px solid var(--or);
+    outline-offset: -1px;
+}
+.servicio-opt.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 12px; right: 14px;
+    font-size: 12px;
+    color: var(--or);
+}
+.sopt-nombre {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 6px;
+    color: var(--blanc);
+}
+.sopt-desc {
+    font-size: 11px;
+    color: rgba(42,31,26,0.5);
+    line-height: 1.6;
+    font-weight: 300;
+    margin-bottom: 12px;
+}
+.sopt-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+.sopt-duracion {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(184,147,90,0.8);
+}
+.sopt-precio {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: var(--blanc);
+}
+
+/* ── FECHA Y HORA ── */
+.fecha-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+.field-group { display: flex; flex-direction: column; gap: 10px; }
+.field-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--or);
+}
+input[type="date"] {
+    background: rgba(42,31,26,0.04);
+    border: 1px solid rgba(184,147,90,0.25);
+    color: var(--blanc);
+    padding: 14px 18px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.3s;
+    color-scheme: light;
+}
+input[type="date"]:focus { border-color: var(--or); }
+
+.horas-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 4px;
+}
+.hora-btn {
+    padding: 10px 8px;
+    background: rgba(42,31,26,0.04);
+    border: 1px solid rgba(184,147,90,0.18);
+    color: rgba(42,31,26,0.65);
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+.hora-btn:hover {
+    background: rgba(184,147,90,0.08);
+    border-color: rgba(184,147,90,0.4);
+    color: var(--blanc);
+}
+.hora-btn.selected {
+    background: var(--or);
+    border-color: var(--or);
+    color: #fdf9f7;
+    font-weight: 400;
+}
+.horas-loading {
+    font-size: 12px;
+    color: rgba(42,31,26,0.35);
+    letter-spacing: 0.1em;
+    padding: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.horas-loading::before {
+    content: '';
+    display: block;
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(184,147,90,0.3);
+    border-top-color: var(--or);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.horas-empty {
+    font-size: 12px;
+    color: rgba(42,31,26,0.35);
+    padding: 20px 0;
+    font-style: italic;
+}
+
+/* ── DATOS PERSONALES ── */
+.resumen-box {
+    background: rgba(184,147,90,0.06);
+    border: 1px solid rgba(184,147,90,0.18);
+    padding: 24px 28px;
+    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+.resumen-key {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--or);
+    margin-bottom: 6px;
+}
+.resumen-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--blanc);
+}
+
+.fields-wrap { display: flex; flex-direction: column; gap: 20px; }
+.input-field {
+    background: rgba(42,31,26,0.04);
+    border: 1px solid rgba(184,147,90,0.22);
+    color: var(--blanc);
+    padding: 14px 18px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.3s;
+}
+.input-field::placeholder { color: rgba(42,31,26,0.28); }
+.input-field:focus { border-color: var(--or); }
+textarea.input-field {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ── BOTONES ── */
+.btn-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    gap: 16px;
+}
+.btn-primary {
+    padding: 16px 48px;
+    background: var(--or);
+    color: #fdf9f7;
+    border: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+.btn-primary:hover { background: var(--or-dark); transform: translateY(-1px); }
+.btn-primary:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+}
+.btn-secondary {
+    padding: 16px 32px;
+    background: transparent;
+    color: rgba(42,31,26,0.5);
+    border: 1px solid rgba(42,31,26,0.15);
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn-secondary:hover {
+    color: var(--blanc);
+    border-color: rgba(42,31,26,0.35);
+}
+
+/* ── CONFIRMACIÓN ── */
+.confirm-wrap {
+    text-align: center;
+    padding: 40px 0;
+}
+.confirm-icon {
+    width: 72px;
+    height: 72px;
+    border: 1px solid var(--or);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 32px;
+    font-size: 28px;
+    color: var(--or);
+    animation: scaleIn 0.5s ease;
+}
+@keyframes scaleIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.confirm-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    margin-bottom: 12px;
+    color: var(--blanc);
+}
+.confirm-title em { font-style: italic; color: var(--or); }
+.confirm-text {
+    font-size: 13px;
+    color: rgba(42,31,26,0.5);
+    line-height: 1.9;
+    font-weight: 300;
+    max-width: 400px;
+    margin: 0 auto 40px;
+}
+.confirm-detail {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    gap: 8px 32px;
+    text-align: left;
+    margin-bottom: 48px;
+    border: 1px solid rgba(184,147,90,0.18);
+    padding: 28px 36px;
+    background: rgba(184,147,90,0.05);
+}
+.confirm-detail .dk {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--or);
+}
+.confirm-detail .dv {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--blanc);
+}
+.btn-home {
+    display: inline-block;
+    padding: 16px 48px;
+    border: 1px solid rgba(184,147,90,0.4);
+    color: var(--or);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    transition: all 0.3s;
+}
+.btn-home:hover { background: rgba(184,147,90,0.08); }
+
+/* ── ERROR ── */
+.msg-error {
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 12px;
+    letter-spacing: 0.05em;
+    display: none;
+}
+.msg-error.visible { display: block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+    nav { padding: 20px 24px; }
+    .page-wrap { padding: 120px 24px 60px; }
+    .card { padding: 32px 24px; }
+    .servicios-grid { grid-template-columns: 1fr; }
+    .fecha-wrap { grid-template-columns: 1fr; }
+    .horas-grid { grid-template-columns: repeat(3, 1fr); }
+    .resumen-box { grid-template-columns: 1fr; }
+    .steps-indicator { gap: 0; }
+    .step-line { width: 40px; }
+    .btn-wrap { flex-direction: column-reverse; }
+    .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-deco"></div>
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-logo">Clémence · Votre Salon Privé</a>
+    <a href="/" class="nav-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Retour
+    </a>
+</nav>
+
+<!-- PÁGINA -->
+<div class="page-wrap">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-eyebrow">Réservation en ligne</div>
+        <h1 class="page-title">Votre <em>rendez-vous</em></h1>
+        <p class="page-subtitle">Un moment rien que pour vous · Clémence vous accueille</p>
+    </div>
+
+    <!-- Indicador de pasos -->
+    <div class="steps-indicator">
+        <div class="step-dot active" id="dot-1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Service</div>
+        </div>
+        <div class="step-line" id="line-1"></div>
+        <div class="step-dot" id="dot-2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Date & Heure</div>
+        </div>
+        <div class="step-line" id="line-2"></div>
+        <div class="step-dot" id="dot-3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Vos coordonnées</div>
+        </div>
+    </div>
+
+    <!-- Card principal -->
+    <div class="card">
+
+        <!-- PASO 1: Elegir servicio -->
+        <div class="step-panel active" id="panel-1">
+            <h2 class="panel-title">Choisissez votre <em>service</em></h2>
+            <p class="panel-desc">Sélectionnez la prestation que vous souhaitez réserver.</p>
+            <div class="servicios-grid" id="servicios-grid">
+                <div class="horas-loading">Chargement des services…</div>
+            </div>
+            <p class="msg-error" id="err-1">Veuillez sélectionner un service pour continuer.</p>
+            <div class="btn-wrap" style="justify-content: flex-end;">
+                <button class="btn-primary" onclick="irPaso2()">Continuer →</button>
+            </div>
+        </div>
+
+        <!-- PASO 2: Fecha y hora -->
+        <div class="step-panel" id="panel-2">
+            <h2 class="panel-title">Choisissez la <em>date & l'heure</em></h2>
+            <p class="panel-desc">Les créneaux disponibles s'affichent automatiquement selon le service choisi.</p>
+
+            <div class="fecha-wrap">
+                <div class="field-group">
+                    <label class="field-label">Date</label>
+                    <input type="date" id="fecha-input" onchange="cargarHoras()">
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Heure disponible</label>
+                    <div id="horas-container">
+                        <p class="horas-empty">Sélectionnez d'abord une date.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="msg-error" id="err-2">Veuillez sélectionner une date et une heure.</p>
+            <div class="btn-wrap">
+                <button class="btn-secondary" onclick="irPaso(1)">← Retour</button>
+                <button class="btn-primary" onclick="irPaso3()">Continuer →</button>
+            </div>
+        </div>
+
+        <!-- PASO 3: Datos personales -->
+        <div class="step-panel" id="panel-3">
+            <h2 class="panel-title">Vos <em>coordonnées</em></h2>
+            <p class="panel-desc">Pour finaliser votre réservation, nous avons besoin de vos informations.</p>
+
+            <!-- Resumen de la selección -->
+            <div class="resumen-box">
+                <div class="resumen-item">
+                    <div class="resumen-key">Service</div>
+                    <div class="resumen-val" id="resumen-servicio">—</div>
+                </div>
+                <div class="resumen-item">
+                    <div class="resumen-key">Date</div>
+                    <div class="resumen-val" id="resumen-fecha">—</div>
+                </div>
+                <div class="resumen-item">
+                    <div class="resumen-key">Heure</div>
+                    <div class="resumen-val" id="resumen-hora">—</div>
+                </div>
+            </div>
+
+            <div class="fields-wrap">
+                <div class="field-group">
+                    <label class="field-label">Nom complet</label>
+                    <input type="text" class="input-field" id="nombre" placeholder="Votre nom et prénom">
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Téléphone</label>
+                    <input type="tel" class="input-field" id="telefono" placeholder="+33 6 00 00 00 00">
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Note (optionnel)</label>
+                    <textarea class="input-field" id="notas" placeholder="Une précision sur votre demande, vos préférences…"></textarea>
+                </div>
+            </div>
+
+            <p class="msg-error" id="err-3">Veuillez remplir votre nom et votre téléphone.</p>
+            <div class="btn-wrap">
+                <button class="btn-secondary" onclick="irPaso(2)">← Retour</button>
+                <button class="btn-primary" id="btn-confirmar" onclick="confirmarReserva()">Confirmer le rendez-vous</button>
+            </div>
+        </div>
+
+        <!-- PASO 4: Confirmación -->
+        <div class="step-panel" id="panel-4">
+            <div class="confirm-wrap">
+                <div class="confirm-icon">✦</div>
+                <h2 class="confirm-title">Rendez-vous <em>confirmé</em></h2>
+                <p class="confirm-text">
+                    Votre réservation a bien été enregistrée.<br>
+                    Clémence vous accueillera avec plaisir.
+                </p>
+                <div class="confirm-detail">
+                    <span class="dk">Service</span><span class="dv" id="conf-servicio">—</span>
+                    <span class="dk">Date</span><span class="dv" id="conf-fecha">—</span>
+                    <span class="dk">Heure</span><span class="dv" id="conf-hora">—</span>
+                    <span class="dk">Nom</span><span class="dv" id="conf-nombre">—</span>
+                </div>
+                <a href="/" class="btn-home">Retour à l'accueil</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // ── Estado global ──
+    let servicios = []
+    let selServicioID = null
+    let selServicioNombre = ''
+    let selFecha = ''
+    let selHora = ''
+
+    const API_URL = ''
+
+    // ── Inicialización ──
+    document.addEventListener('DOMContentLoaded', () => {
+        const hoy = new Date().toISOString().split('T')[0]
+        document.getElementById('fecha-input').min = hoy
+        cargarServicios()
+    })
+
+    // ── Cargar servicios ──
+    async function cargarServicios() {
+        try {
+            const res = await fetch(`${API_URL}/servicios`)
+            if (!res.ok) throw new Error('Error')
+            servicios = await res.json()
+            renderServicios()
+        } catch (e) {
+            document.getElementById('servicios-grid').innerHTML =
+                '<p class="horas-empty">Erreur lors du chargement des services.</p>'
+        }
+    }
+
+    function renderServicios() {
+        const grid = document.getElementById('servicios-grid')
+        if (!servicios || servicios.length === 0) {
+            grid.innerHTML = '<p class="horas-empty">Aucun service disponible pour le moment.</p>'
+            return
+        }
+        grid.innerHTML = servicios.map(s => `
+            <div class="servicio-opt" id="sopt-${s.id}" onclick="seleccionarServicio(${s.id}, '${escapar(s.nombre)}')">
+                <div class="sopt-nombre">${s.nombre}</div>
+                <p class="sopt-desc">${s.descripcion || ''}</p>
+                <div class="sopt-meta">
+                    <span class="sopt-duracion">${s.duracion_minutos} min</span>
+                    <span class="sopt-precio">${s.precio > 0 ? 'Dès ' + s.precio + ' €' : ''}</span>
+                </div>
+            </div>
+        `).join('')
+    }
+
+    function seleccionarServicio(id, nombre) {
+        document.querySelectorAll('.servicio-opt').forEach(el => el.classList.remove('selected'))
+        document.getElementById('sopt-' + id).classList.add('selected')
+        selServicioID = id
+        selServicioNombre = nombre
+        ocultarError('err-1')
+    }
+
+    // ── Cargar horas ──
+    async function cargarHoras() {
+        const fechaInput = document.getElementById('fecha-input')
+        selFecha = fechaInput.value
+        selHora = ''
+
+        if (!selFecha || !selServicioID) return
+
+        const container = document.getElementById('horas-container')
+        container.innerHTML = '<div class="horas-loading">Recherche des créneaux…</div>'
+
+        try {
+            const res = await fetch(`${API_URL}/disponibilidad?fecha=${selFecha}&servicio_id=${selServicioID}`)
+            const horas = await res.json()
+
+            if (!horas || horas.length === 0) {
+                container.innerHTML = '<p class="horas-empty">Aucun créneau disponible ce jour-là.</p>'
+                return
+            }
+
+            container.innerHTML = `<div class="horas-grid">
+                ${horas.map(h => `
+                    <button class="hora-btn" onclick="seleccionarHora('${h}', this)">${h}</button>
+                `).join('')}
+            </div>`
+        } catch (e) {
+            container.innerHTML = '<p class="horas-empty">Erreur lors du chargement des créneaux.</p>'
+        }
+    }
+
+    function seleccionarHora(hora, btn) {
+        document.querySelectorAll('.hora-btn').forEach(b => b.classList.remove('selected'))
+        btn.classList.add('selected')
+        selHora = hora
+        ocultarError('err-2')
+    }
+
+    // ── Navegación ──
+    function irPaso2() {
+        if (!selServicioID) { mostrarError('err-1'); return }
+        irPaso(2)
+    }
+
+    function irPaso3() {
+        if (!selFecha || !selHora) { mostrarError('err-2'); return }
+        document.getElementById('resumen-servicio').textContent = selServicioNombre
+        document.getElementById('resumen-fecha').textContent = formatearFecha(selFecha)
+        document.getElementById('resumen-hora').textContent = selHora
+        irPaso(3)
+    }
+
+    function irPaso(n) {
+        document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'))
+        document.getElementById('panel-' + n).classList.add('active')
+        actualizarIndicador(n)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    function actualizarIndicador(paso) {
+        for (let i = 1; i <= 3; i++) {
+            const dot = document.getElementById('dot-' + i)
+            dot.classList.remove('active', 'done')
+            if (i < paso) dot.classList.add('done')
+            else if (i === paso) dot.classList.add('active')
+        }
+        for (let i = 1; i <= 2; i++) {
+            const line = document.getElementById('line-' + i)
+            line.classList.toggle('done', i < paso)
+        }
+    }
+
+    // ── Confirmar reserva ──
+    async function confirmarReserva() {
+        const nombre = document.getElementById('nombre').value.trim()
+        const telefono = document.getElementById('telefono').value.trim()
+        const notas = document.getElementById('notas').value.trim()
+
+        if (!nombre || !telefono) { 
+            mostrarError('err-3'); 
+            return 
+        }
+
+        const btn = document.getElementById('btn-confirmar')
+        btn.disabled = true
+        btn.textContent = 'Confirmation…'
+
+        const fechaHora = `${selFecha} ${selHora}:00`
+
+        try {
+            const res = await fetch(`${API_URL}/reservar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombre,
+                    telefono,
+                    servicio_id: selServicioID,
+                    fecha_hora: fechaHora,
+                    notas
+                })
+            })
+
+            if (!res.ok) throw new Error('Error')
+
+            // Éxito
+            document.getElementById('conf-servicio').textContent = selServicioNombre
+            document.getElementById('conf-fecha').textContent = formatearFecha(selFecha)
+            document.getElementById('conf-hora').textContent = selHora
+            document.getElementById('conf-nombre').textContent = nombre
+
+            document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'))
+            document.getElementById('panel-4').classList.add('active')
+            document.querySelector('.steps-indicator').style.opacity = '0'
+
+        } catch (e) {
+            btn.disabled = false
+            btn.textContent = 'Confirmer le rendez-vous'
+            mostrarError('err-3')
+            document.getElementById('err-3').textContent = 'Une erreur est survenue. Veuillez réessayer.'
+        }
+    }
+
+    // ── Utilidades ──
+    function formatearFecha(fecha) {
+        const d = new Date(fecha + 'T12:00:00')
+        return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+    }
+
+    function escapar(str) {
+        return str.replace(/'/g, "\\'").replace(/"/g, '&quot;')
+    }
+
+    function mostrarError(id) {
+        document.getElementById(id).classList.add('visible')
+    }
+
+    function ocultarError(id) {
+        document.getElementById(id).classList.remove('visible')
+    }
+</script>

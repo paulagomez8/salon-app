@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Clémence Salon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --noir: #fdf9f7;
+    --noir2: #f5ede8;
+    --noir3: #ede3dc;
+    --blanc: #2a1f1a;
+    --gris: #8a7060;
+    --gris-clair: #e8ddd8;
+    --or: #b8935a;
+    --or-dark: #9e7b47;
+    --or-dim: rgba(184,147,90,0.18);
+    --verde: #2d7a52;
+    --rojo: #a03020;
+    --azul: #2b5ab8;
+    --sidebar-w: 240px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+    font-family: 'Raleway', sans-serif;
+    background: var(--noir);
+    color: var(--blanc);
+    display: flex;
+    overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--noir2);
+    border-right: 1px solid var(--or-dim);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0; top: 0;
+    z-index: 10;
+}
+.sidebar-logo { padding: 32px 24px 28px; border-bottom: 1px solid var(--or-dim); }
+.sidebar-logo-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; letter-spacing: 0.12em; color: var(--blanc); line-height: 1.3; }
+.sidebar-logo-sub { font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--or); margin-top: 4px; }
+.sidebar-nav { flex: 1; padding: 20px 0; overflow-y: auto; }
+.nav-section { font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gris); padding: 16px 24px 8px; }
+.nav-item {
+    display: flex; align-items: center; gap: 12px; padding: 11px 24px;
+    cursor: pointer; font-size: 12px; letter-spacing: 0.08em;
+    color: rgba(42,31,26,0.5); transition: all 0.2s;
+    border-left: 2px solid transparent; text-transform: uppercase;
+}
+.nav-item:hover { color: var(--blanc); background: rgba(184,147,90,0.06); }
+.nav-item.active { color: var(--or); border-left-color: var(--or); background: rgba(184,147,90,0.08); }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+.sidebar-footer { padding: 20px 24px; border-top: 1px solid var(--or-dim); font-size: 10px; color: var(--gris); letter-spacing: 0.05em; }
+.sidebar-footer a { color: var(--or); text-decoration: none; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* ── MAIN ── */
+.main { margin-left: var(--sidebar-w); flex: 1; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+.topbar {
+    padding: 20px 40px; border-bottom: 1px solid var(--or-dim);
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(253,249,247,0.92); backdrop-filter: blur(8px);
+    position: sticky; top: 0; z-index: 5;
+}
+.topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; }
+.topbar-title em { font-style: italic; color: var(--or); }
+.topbar-date { font-size: 11px; color: rgba(42,31,26,0.4); letter-spacing: 0.1em; }
+.content { padding: 36px 40px; flex: 1; }
+
+/* ── SECCIÓN ── */
+.section { display: none; }
+.section.active { display: block; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── STATS ── */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--noir2); border: 1px solid var(--or-dim); padding: 20px 24px; position: relative; overflow: hidden; }
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--or); }
+.stat-val { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; line-height: 1; margin-bottom: 6px; color: var(--blanc); }
+.stat-label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(42,31,26,0.45); }
+
+/* ── TOOLBAR ── */
+.toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.toolbar-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; flex: 1; }
+.toolbar-title em { font-style: italic; color: var(--or); }
+
+/* ── BOTONES ── */
+.btn { padding: 10px 24px; font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border: none; }
+.btn-gold { background: var(--or); color: #fdf9f7; }
+.btn-gold:hover { background: var(--or-dark); }
+.btn-outline { background: transparent; color: rgba(42,31,26,0.6); border: 1px solid rgba(42,31,26,0.18); }
+.btn-outline:hover { border-color: var(--or); color: var(--or); }
+.btn-outline.active-view { border-color: var(--or); color: var(--or); background: rgba(184,147,90,0.08); }
+.btn-sm { padding: 6px 14px; font-size: 9px; }
+.btn-danger { background: transparent; color: #a03020; border: 1px solid rgba(160,48,32,0.3); }
+.btn-danger:hover { background: rgba(160,48,32,0.08); border-color: #a03020; }
+.btn-success { background: transparent; color: #2d7a52; border: 1px solid rgba(45,122,82,0.3); }
+.btn-success:hover { background: rgba(45,122,82,0.08); }
+
+/* ── TABLA ── */
+.table-wrap { border: 1px solid var(--or-dim); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead tr { border-bottom: 1px solid var(--or-dim); background: rgba(184,147,90,0.05); }
+th { padding: 12px 16px; text-align: left; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--or); font-weight: 400; }
+td { padding: 13px 16px; border-bottom: 1px solid rgba(184,147,90,0.08); color: rgba(42,31,26,0.75); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(184,147,90,0.04); }
+
+/* ── BADGES ── */
+.badge { display: inline-block; padding: 3px 10px; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; }
+.badge-pendiente { background: rgba(43,90,184,0.1); color: #2b5ab8; border: 1px solid rgba(43,90,184,0.25); }
+.badge-confirmada { background: rgba(45,122,82,0.1); color: #2d7a52; border: 1px solid rgba(45,122,82,0.3); }
+.badge-cancelada { background: rgba(160,48,32,0.1); color: #a03020; border: 1px solid rgba(160,48,32,0.25); }
+.badge-completada { background: rgba(184,147,90,0.12); color: var(--or); border: 1px solid var(--or-dim); }
+
+/* ── FILTROS ── */
+.filtros { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+input[type="date"], input[type="text"], input[type="tel"],
+input[type="number"], select, textarea {
+    background: rgba(42,31,26,0.04); border: 1px solid rgba(184,147,90,0.22);
+    color: var(--blanc); padding: 9px 14px; font-family: 'Raleway', sans-serif;
+    font-size: 12px; outline: none; transition: border-color 0.2s; color-scheme: light;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--or); }
+input::placeholder, textarea::placeholder { color: rgba(42,31,26,0.28); }
+select option { background: #f5ede8; color: #2a1f1a; }
+
+/* ── MODAL ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(42,31,26,0.55); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal { background: var(--noir2); border: 1px solid var(--or-dim); padding: 40px; width: 100%; max-width: 480px; position: relative; animation: slideUp 0.25s ease; }
+@keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal::before { content: ''; position: absolute; top: -1px; left: 40px; width: 50px; height: 1px; background: var(--or); }
+.modal-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; margin-bottom: 28px; color: var(--blanc); }
+.modal-title em { font-style: italic; color: var(--or); }
+.modal-close { position: absolute; top: 16px; right: 20px; background: none; border: none; color: rgba(42,31,26,0.4); font-size: 20px; cursor: pointer; line-height: 1; }
+.modal-close:hover { color: var(--blanc); }
+.form-input { padding: 10px 14px; background: rgba(42,31,26,0.04); border: 1px solid var(--or-dim); color: var(--blanc); font-family: 'Raleway', sans-serif; font-size: 14px; outline: none; transition: border 0.2s; width: 100%; }
+.form-input:focus { border-color: var(--or); }
+.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.form-label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--or); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; }
+
+/* ── EMPTY STATE ── */
+.empty { padding: 48px; text-align: center; color: rgba(42,31,26,0.3); font-size: 13px; letter-spacing: 0.05em; font-style: italic; }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 28px; right: 28px; background: var(--noir2); border: 1px solid var(--or); padding: 14px 24px; font-size: 12px; letter-spacing: 0.05em; color: var(--or); z-index: 200; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.error { border-color: var(--rojo); color: var(--rojo); }
+
+/* ── BLOQUEOS ── */
+.bloqueo-card { background: var(--noir2); border: 1px solid var(--or-dim); padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.bloqueo-tipo { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--or); margin-bottom: 4px; }
+.bloqueo-hora { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; color: var(--blanc); }
+.bloqueo-nota { font-size: 11px; color: rgba(42,31,26,0.45); margin-top: 2px; }
+
+/* ── SERVICIOS ── */
+.servicios-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.servicio-card { background: var(--noir2); border: 1px solid var(--or-dim); padding: 22px 24px; position: relative; }
+.servicio-card.inactivo { opacity: 0.4; }
+.sc-nombre { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; margin-bottom: 6px; color: var(--blanc); }
+.sc-duracion { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--or); margin-bottom: 4px; }
+.sc-precio { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--blanc); margin-bottom: 14px; }
+.sc-actions { display: flex; gap: 8px; }
+.cliente-row { cursor: pointer; }
+.cliente-row:hover td { background: rgba(184,147,90,0.05) !important; }
+
+/* ── AGENDA ── */
+.agenda-wrap { display: flex; gap: 0; }
+.agenda-horas { display: flex; flex-direction: column; width: 48px; flex-shrink: 0; padding-top: 2px; }
+.agenda-hora-label { font-size: 10px; color: rgba(42,31,26,0.35); text-align: right; padding-right: 10px; letter-spacing: 0.05em; }
+.agenda-grid { flex: 1; position: relative; border-left: 1px solid rgba(184,147,90,0.15); }
+.agenda-fila { border-bottom: 1px solid rgba(184,147,90,0.08); position: relative; }
+.agenda-fila:nth-child(odd) { background: rgba(42,31,26,0.015); }
+.agenda-cita {
+    position: absolute; left: 6px; right: 6px;
+    border-radius: 2px; padding: 5px 10px;
+    font-size: 11px; overflow: hidden; z-index: 2;
+    border-left: 2px solid; cursor: default; box-sizing: border-box;
+    transition: filter 0.15s;
+}
+.agenda-cita:hover { filter: brightness(0.95); }
+.agenda-cita.confirmada { background: rgba(29,158,117,0.12); border-color: #1D9E75; color: #1a5c44; }
+.agenda-cita.pendiente { background: rgba(43,90,184,0.1); border-color: #2b5ab8; color: #1e3d7a; }
+.agenda-cita.completada { background: rgba(184,147,90,0.12); border-color: #b8935a; color: #6b4f1e; }
+.agenda-cita.cancelada { background: rgba(160,48,32,0.08); border-color: #a03020; color: #7a2518; opacity: 0.7; }
+.agenda-cita-hora { font-size: 9px; letter-spacing: 0.1em; opacity: 0.65; margin-bottom: 2px; }
+.agenda-cita-nombre { font-weight: 500; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.agenda-cita-servicio { font-size: 10px; opacity: 0.65; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.agenda-paralelo-banda {
+    position: absolute; left: 6px; right: 6px;
+    background: repeating-linear-gradient(45deg, rgba(184,147,90,0.05), rgba(184,147,90,0.05) 3px, transparent 3px, transparent 7px);
+    border: 1px dashed rgba(184,147,90,0.25); border-radius: 2px; z-index: 1; box-sizing: border-box;
+}
+.agenda-paralelo-tag {
+    position: absolute; right: 8px; top: 5px;
+    font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+    background: rgba(184,147,90,0.15); color: var(--or); padding: 1px 5px; border-radius: 2px;
+}
+.agenda-now-line { position: absolute; left: 0; right: 0; height: 1px; background: rgba(160,48,32,0.7); z-index: 6; pointer-events: none; }
+.agenda-now-dot { position: absolute; left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: var(--rojo); }
+.agenda-bloqueo {
+    position: absolute; left: 0; right: 0; z-index: 1;
+    background: repeating-linear-gradient(135deg, rgba(138,112,96,0.06), rgba(138,112,96,0.06) 4px, transparent 4px, transparent 10px);
+    border-top: 1px dashed rgba(138,112,96,0.25); border-bottom: 1px dashed rgba(138,112,96,0.25);
+}
+.vista-tabs { display: flex; gap: 6px; margin-left: auto; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-name">Clémence<br>Votre Salon Privé</div>
+        <div class="sidebar-logo-sub">Administration</div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Gestion</div>
+        <div class="nav-item active" onclick="showSection('citas')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Rendez-vous
+        </div>
+        <div class="nav-item" onclick="showSection('servicios')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Services
+        </div>
+        <div class="nav-item" onclick="showSection('precios')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Tarifs
+        </div>
+        <div class="nav-section">Agenda</div>
+        <div class="nav-item" onclick="showSection('bloqueos')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+            Blocages
+        </div>
+        <div class="nav-section">Clients</div>
+        <div class="nav-item" onclick="showSection('clientes')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Clients
+        </div>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="nav-item" onclick="showSection('parametres')" style="margin-bottom:8px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Paramètres
+        </div>
+        <a href="/" target="_blank">← Site public</a>
+        <div onclick="logout()" style="margin-top:8px; color:#e24b4a; cursor:pointer; font-size:10px; letter-spacing:0.2em; text-transform:uppercase;">Déconnexion</div>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+    <div class="topbar">
+        <div class="topbar-title" id="topbar-title">Rendez-<em>vous</em></div>
+        <div class="topbar-date" id="topbar-date"></div>
+    </div>
+    <div class="content">
+
+        <!-- ══ CITAS ══ -->
+        <div class="section active" id="sec-citas">
+            <div class="stats-row" id="stats-citas">
+                <div class="stat-card"><div class="stat-val" id="stat-total">—</div><div class="stat-label">Total aujourd'hui</div></div>
+                <div class="stat-card"><div class="stat-val" id="stat-confirmadas">—</div><div class="stat-label">Confirmées</div></div>
+                <div class="stat-card"><div class="stat-val" id="stat-pendientes">—</div><div class="stat-label">En attente</div></div>
+                <div class="stat-card"><div class="stat-val" id="stat-completadas">—</div><div class="stat-label">Terminées</div></div>
+            </div>
+            <div class="filtros">
+                <input type="date" id="filtro-fecha" onchange="cargarCitas()">
+                <select id="filtro-estado" onchange="cargarCitas()">
+                    <option value="">Tous les états</option>
+                    <option value="pendiente">En attente</option>
+                    <option value="confirmada">Confirmée</option>
+                    <option value="completada">Terminée</option>
+                    <option value="cancelada">Annulée</option>
+                </select>
+                <div class="vista-tabs">
+                    <button class="btn btn-outline btn-sm active-view" id="btn-agenda" onclick="setVista('agenda')">Agenda</button>
+                    <button class="btn btn-outline btn-sm" id="btn-lista" onclick="setVista('lista')">Liste</button>
+                </div>
+            </div>
+
+            <!-- Vista agenda -->
+            <div id="vista-agenda">
+                <div style="display:flex;gap:0" id="agenda-container">
+                    <div class="agenda-horas" id="agenda-horas"></div>
+                    <div class="agenda-grid" id="agenda-grid"></div>
+                </div>
+            </div>
+
+            <!-- Vista lista -->
+            <div id="vista-lista" style="display:none">
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>Heure</th>
+                            <th>Client</th>
+                            <th>Téléphone</th>
+                            <th>Service</th>
+                            <th>État</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr></thead>
+                        <tbody id="tabla-citas"><tr><td colspan="7" class="empty">Chargement…</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ SERVICIOS ══ -->
+        <div class="section" id="sec-servicios">
+            <div class="toolbar">
+                <div class="toolbar-title">Gestion des <em>services</em></div>
+                <button class="btn btn-gold" onclick="abrirModalServicio()">+ Nouveau service</button>
+            </div>
+            <div class="servicios-admin-grid" id="grid-servicios"><div class="empty">Chargement…</div></div>
+        </div>
+
+        <!-- ══ PRECIOS ══ -->
+        <div class="section" id="sec-precios">
+            <div class="toolbar"><div class="toolbar-title">Grille des <em>tarifs</em></div></div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr>
+                        <th>Catégorie</th><th>Prestation</th>
+                        <th>Prix min (€)</th><th>Prix max (€)</th>
+                        <th>Ordre</th><th>Actions</th>
+                    </tr></thead>
+                    <tbody id="tabla-precios"><tr><td colspan="6" class="empty">Chargement…</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ══ BLOQUEOS ══ -->
+        <div class="section" id="sec-bloqueos">
+            <div class="toolbar">
+                <div class="toolbar-title">Blocages <em>agenda</em></div>
+                <button class="btn btn-gold" onclick="abrirModalBloqueo()">+ Nouveau blocage</button>
+            </div>
+            <div id="lista-bloqueos"><div class="empty">Chargement…</div></div>
+        </div>
+
+        <!-- ══ CLIENTES ══ -->
+        <div class="section" id="sec-clientes">
+            <div class="toolbar">
+                <div class="toolbar-title">Gestion des <em>clients</em></div>
+                <input type="text" id="buscar-cliente" placeholder="Rechercher…" oninput="filtrarClientes()" style="width:220px">
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr>
+                        <th>Nom</th><th>Téléphone</th><th>Email</th>
+                        <th>Notes</th><th>Inscrit le</th><th>Actions</th>
+                    </tr></thead>
+                    <tbody id="tabla-clientes"><tr><td colspan="6" class="empty">Chargement…</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ══ PARAMÈTRES ══ -->
+        <div class="section" id="sec-parametres">
+            <div class="toolbar"><div class="toolbar-title">Accès <em>administration</em></div></div>
+            <div style="max-width:420px">
+                <div class="form-group" style="margin-bottom:20px">
+                    <label class="form-label">Utilisateur actuel</label>
+                    <input type="text" id="cfg-usuario" class="form-input" placeholder="Chargement…">
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                    <label class="form-label">Mot de passe actuel</label>
+                    <input type="password" id="cfg-pwd-actual" class="form-input" placeholder="••••••••">
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                    <label class="form-label">Nouveau mot de passe</label>
+                    <input type="password" id="cfg-pwd-nueva" class="form-input" placeholder="••••••••">
+                </div>
+                <div class="form-group" style="margin-bottom:28px">
+                    <label class="form-label">Confirmer le nouveau mot de passe</label>
+                    <input type="password" id="cfg-pwd-confirma" class="form-input" placeholder="••••••••">
+                </div>
+                <button class="btn btn-gold" onclick="guardarConfig()">Enregistrer les modifications</button>
+                <p id="cfg-msg" style="margin-top:14px; font-size:12px; display:none"></p>
+            </div>
+        </div>
+
+    </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL SERVICIO -->
+<div class="modal-overlay" id="modal-servicio">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-servicio')">×</button>
+        <div class="modal-title" id="modal-servicio-title">Nouveau <em>service</em></div>
+        <input type="hidden" id="ms-id">
+        <div class="form-group">
+            <label class="form-label">Nom du service</label>
+            <input type="text" id="ms-nombre" placeholder="Ex: Coupe + brushing" class="form-input">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea id="ms-descripcion" rows="2" placeholder="Courte description…" class="form-input"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Durée totale (min)</label>
+                <input type="number" id="ms-duracion" min="15" step="15" value="60" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Prix (€)</label>
+                <input type="number" id="ms-precio" min="0" step="5" value="0" class="form-input">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Durée active (min)</label>
+                <input type="number" id="ms-duracion-activa" min="0" step="5" value="0" class="form-input">
+            </div>
+            <div class="form-group" style="justify-content:flex-end;padding-top:24px">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:11px;color:rgba(248,246,242,0.6)">
+                    <input type="checkbox" id="ms-paralelo" style="width:auto;padding:0;border:none">
+                    Permet parallèle
+                </label>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="cerrarModal('modal-servicio')">Annuler</button>
+            <button class="btn btn-gold" onclick="guardarServicio()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PRECIO -->
+<div class="modal-overlay" id="modal-precio">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-precio')">×</button>
+        <div class="modal-title">Modifier le <em>tarif</em></div>
+        <input type="hidden" id="mp-id">
+        <div class="form-group">
+            <label class="form-label">Prestation</label>
+            <input type="text" id="mp-nombre" class="form-input" readonly style="opacity:0.5">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Prix min (€)</label>
+                <input type="number" id="mp-min" min="0" step="5" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Prix max (€)</label>
+                <input type="number" id="mp-max" min="0" step="5" class="form-input">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="cerrarModal('modal-precio')">Annuler</button>
+            <button class="btn btn-gold" onclick="guardarPrecio()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL BLOQUEO -->
+<div class="modal-overlay" id="modal-bloqueo">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-bloqueo')">×</button>
+        <div class="modal-title">Nouveau <em>blocage</em></div>
+        <div class="form-group">
+            <label class="form-label">Type</label>
+            <select id="mb-tipo" onchange="toggleTipoBloqueo()" class="form-input">
+                <option value="fecha">Date spécifique</option>
+                <option value="dia">Jour de la semaine (récurrent)</option>
+            </select>
+        </div>
+        <div class="form-group" id="mb-grupo-fecha">
+            <label class="form-label">Date</label>
+            <input type="date" id="mb-fecha" class="form-input">
+        </div>
+        <div class="form-group" id="mb-grupo-dia" style="display:none">
+            <label class="form-label">Jour</label>
+            <select id="mb-dia" class="form-input">
+                <option value="1">Lundi</option><option value="2">Mardi</option>
+                <option value="3">Mercredi</option><option value="4">Jeudi</option>
+                <option value="5">Vendredi</option><option value="6">Samedi</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Début</label>
+                <input type="time" id="mb-inicio" value="09:00" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Fin</label>
+                <input type="time" id="mb-fin" value="10:00" class="form-input">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Note (optionnel)</label>
+            <input type="text" id="mb-nota" placeholder="Ex: Pause déjeuner, formation…" class="form-input">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="cerrarModal('modal-bloqueo')">Annuler</button>
+            <button class="btn btn-gold" onclick="guardarBloqueo()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const API = ''  // mismo origen
+let todosClientes = []
+let todosServicios = []
+let vistaActual = 'agenda'
+
+const HORA_INI = 8
+const HORA_FIN = 19
+const ALTO_HORA = 52  // px por hora
+const PX_MIN = ALTO_HORA / 60
+
+const hoy = new Date().toISOString().split('T')[0]
+document.getElementById('filtro-fecha').value = hoy
+document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('fr-FR', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+})
+
+// ── Navegación ──
+const sectionTitles = {
+    citas: 'Rendez-<em>vous</em>',
+    servicios: 'Gestion des <em>services</em>',
+    precios: 'Grille des <em>tarifs</em>',
+    bloqueos: 'Blocages <em>agenda</em>',
+    clientes: 'Gestion des <em>clients</em>',
+    parametres: '<em>Paramètres</em>',
+}
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+    document.getElementById('sec-' + id).classList.add('active')
+    const navEl = document.querySelector(`.nav-item[onclick="showSection('${id}')"]`)
+    if (navEl) navEl.classList.add('active')
+    document.getElementById('topbar-title').innerHTML = sectionTitles[id]
+    if (id === 'citas') cargarCitas()
+    if (id === 'servicios') cargarServicios()
+    if (id === 'precios') cargarPrecios()
+    if (id === 'bloqueos') cargarBloqueos()
+    if (id === 'clientes') cargarClientes()
+    if (id === 'parametres') cargarConfig()
+}
+
+function setVista(v) {
+    vistaActual = v
+    document.getElementById('vista-agenda').style.display = v === 'agenda' ? '' : 'none'
+    document.getElementById('vista-lista').style.display = v === 'lista' ? '' : 'none'
+    document.getElementById('btn-agenda').classList.toggle('active-view', v === 'agenda')
+    document.getElementById('btn-lista').classList.toggle('active-view', v === 'lista')
+}
+
+// ── Toast ──
+function toast(msg, tipo = 'ok') {
+    const t = document.getElementById('toast')
+    t.textContent = msg
+    t.className = 'toast show' + (tipo === 'error' ? ' error' : '')
+    setTimeout(() => t.className = 'toast', 3000)
+}
+
+// ── Modales ──
+function abrirModal(id) { document.getElementById(id).classList.add('open') }
+function cerrarModal(id) { document.getElementById(id).classList.remove('open') }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open') })
+})
+
+// ═══════════════════════════════════════
+// CITAS
+// ═══════════════════════════════════════
+function horaAMin(h) {
+    const [hh, mm] = h.split(':').map(Number)
+    return hh * 60 + mm
+}
+function topPx(horaStr) {
+    return (horaAMin(horaStr) - HORA_INI * 60) * PX_MIN
+}
+
+async function cargarCitas() {
+    const fecha = document.getElementById('filtro-fecha').value
+    const estado = document.getElementById('filtro-estado').value
+
+    try {
+        const [resCitas, resBloqueos] = await Promise.all([
+            fetch(`${API}/citas`),
+            fetch(`${API}/bloqueos`)
+        ])
+        const todasCitas = await resCitas.json() || []
+        const todosBloqueos = await resBloqueos.json() || []
+
+        let filtradas = todasCitas
+        if (fecha) filtradas = filtradas.filter(c => c.fecha_hora && c.fecha_hora.startsWith(fecha))
+        if (estado) filtradas = filtradas.filter(c => c.estado === estado)
+
+        // Stats del día seleccionado
+        const deHoy = todasCitas.filter(c => c.fecha_hora && c.fecha_hora.startsWith(fecha))
+        document.getElementById('stat-total').textContent = deHoy.length
+        document.getElementById('stat-confirmadas').textContent = deHoy.filter(c => c.estado === 'confirmada').length
+        document.getElementById('stat-pendientes').textContent = deHoy.filter(c => c.estado === 'pendiente').length
+        document.getElementById('stat-completadas').textContent = deHoy.filter(c => c.estado === 'completada').length
+
+        // Bloqueos del día
+        const diaSemana = (() => {
+            if (!fecha) return 0
+            const d = new Date(fecha + 'T12:00:00').getDay()
+            return d === 0 ? 7 : d
+        })()
+        const bloqueosHoy = (todosBloqueos || []).filter(b =>
+            b.activo && (b.fecha === fecha || b.dia_semana === diaSemana)
+        )
+
+        renderAgenda(filtradas, bloqueosHoy)
+        renderLista(filtradas)
+    } catch(e) {
+        console.error(e)
+        document.getElementById('tabla-citas').innerHTML = '<tr><td colspan="7" class="empty">Erreur de chargement.</td></tr>'
+    }
+}
+
+function renderAgenda(citas, bloqueos) {
+    const horasEl = document.getElementById('agenda-horas')
+    const gridEl = document.getElementById('agenda-grid')
+    horasEl.innerHTML = ''
+    gridEl.innerHTML = ''
+
+    const totalHoras = HORA_FIN - HORA_INI
+    const totalPx = totalHoras * ALTO_HORA
+
+    gridEl.style.height = totalPx + 'px'
+    gridEl.style.position = 'relative'
+
+    // Etiquetas de hora
+    for (let h = HORA_INI; h <= HORA_FIN; h++) {
+        const lbl = document.createElement('div')
+        lbl.className = 'agenda-hora-label'
+        lbl.style.height = h < HORA_FIN ? ALTO_HORA + 'px' : '16px'
+        lbl.style.lineHeight = h < HORA_FIN ? ALTO_HORA + 'px' : '16px'
+        lbl.textContent = h + ':00'
+        horasEl.appendChild(lbl)
+
+        // Línea horizontal en el grid
+        if (h < HORA_FIN) {
+            const fila = document.createElement('div')
+            fila.className = 'agenda-fila'
+            fila.style.height = ALTO_HORA + 'px'
+            gridEl.appendChild(fila)
+        }
+    }
+
+    // Bloqueos
+    bloqueos.forEach(b => {
+        const ini = horaAMin(b.hora_inicio)
+        const fin = horaAMin(b.hora_fin)
+        const top = (ini - HORA_INI * 60) * PX_MIN
+        const height = (fin - ini) * PX_MIN
+        if (height <= 0) return
+        const el = document.createElement('div')
+        el.className = 'agenda-bloqueo'
+        el.style.top = top + 'px'
+        el.style.height = height + 'px'
+        el.title = b.nota || 'Blocage'
+        gridEl.appendChild(el)
+    })
+
+    // Línea de "ahora"
+    const ahora = new Date()
+    const ahoraMin = ahora.getHours() * 60 + ahora.getMinutes()
+    const fechaFiltro = document.getElementById('filtro-fecha').value
+    if (fechaFiltro === hoy && ahoraMin >= HORA_INI * 60 && ahoraMin <= HORA_FIN * 60) {
+        const line = document.createElement('div')
+        line.className = 'agenda-now-line'
+        line.style.top = ((ahoraMin - HORA_INI * 60) * PX_MIN) + 'px'
+        const dot = document.createElement('div')
+        dot.className = 'agenda-now-dot'
+        line.appendChild(dot)
+        gridEl.appendChild(line)
+    }
+
+    // Citas
+    if (!citas.length) {
+        const empty = document.createElement('div')
+        empty.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(248,246,242,0.2);font-size:12px;letter-spacing:0.1em;font-style:italic'
+        empty.textContent = 'Aucun rendez-vous'
+        gridEl.appendChild(empty)
+        return
+    }
+
+    citas.sort((a, b) => a.fecha_hora.localeCompare(b.fecha_hora))
+
+    citas.forEach(c => {
+        if (!c.fecha_hora) return
+        const horaStr = c.fecha_hora.substring(11, 16)
+        const durTotal = c.duracion_minutos || 60
+        const durActiva = c.duracion_activa_minutos || durTotal
+        const permiteParalelo = !!c.permite_paralelo
+
+        const top = topPx(horaStr)
+        const height = durTotal * PX_MIN - 2
+
+        if (top < 0 || top > (HORA_FIN - HORA_INI) * ALTO_HORA) return
+
+        // Si es paralela, mostrar banda de espera (tiempo químico)
+        if (permiteParalelo && durActiva < durTotal) {
+            const esperaTop = top + durActiva * PX_MIN
+            const esperaH = (durTotal - durActiva) * PX_MIN - 2
+            const banda = document.createElement('div')
+            banda.className = 'agenda-paralelo-banda'
+            banda.style.top = esperaTop + 'px'
+            banda.style.height = esperaH + 'px'
+            banda.title = 'Temps de pose chimique (disponible pour un autre client)'
+            gridEl.appendChild(banda)
+        }
+
+        const el = document.createElement('div')
+        el.className = 'agenda-cita ' + (c.estado || 'pendiente')
+        el.style.top = top + 'px'
+        el.style.height = Math.max(height, 24) + 'px'
+
+        let html = `<div class="agenda-cita-hora">${horaStr}</div>
+                    <div class="agenda-cita-nombre">${c.cliente_nombre || '—'}</div>`
+        if (height > 32) {
+            html += `<div class="agenda-cita-servicio">${c.servicio_nombre || ''}${durTotal ? ' · ' + durTotal + 'min' : ''}</div>`
+        }
+        if (permiteParalelo) {
+            html += `<div class="agenda-paralelo-tag">parallèle</div>`
+        }
+        el.innerHTML = html
+
+        // Tooltip con acciones al hacer click
+        el.addEventListener('click', () => mostrarAccionesCita(c))
+        gridEl.appendChild(el)
+    })
+}
+
+function mostrarAccionesCita(c) {
+    const hora = c.fecha_hora ? c.fecha_hora.substring(11, 16) : '—'
+    const msg = `${hora} · ${c.cliente_nombre} · ${c.servicio_nombre}\n\nChanger l'état :`
+    const opciones = ['confirmada', 'completada', 'cancelada'].filter(e => e !== c.estado)
+    const labels = { confirmada: 'Confirmer', completada: 'Terminer', cancelada: 'Annuler' }
+    const elegido = opciones.length > 0
+        ? prompt(`${msg}\n${opciones.map((o, i) => `${i+1}. ${labels[o]}`).join('\n')}\n\nEntrez le numéro (ou annuler):`)
+        : null
+    if (elegido === null) return
+    const idx = parseInt(elegido) - 1
+    if (idx >= 0 && idx < opciones.length) {
+        cambiarEstado(c.id, opciones[idx])
+    }
+}
+
+function renderLista(citas) {
+    const tbody = document.getElementById('tabla-citas')
+    if (!citas.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">Aucun rendez-vous trouvé.</td></tr>'
+        return
+    }
+    const sorted = [...citas].sort((a, b) => a.fecha_hora.localeCompare(b.fecha_hora))
+    tbody.innerHTML = sorted.map(c => {
+        const hora = c.fecha_hora ? c.fecha_hora.substring(11, 16) : '—'
+        return `<tr>
+            <td><strong>${hora}</strong></td>
+            <td>${c.cliente_nombre || '—'}</td>
+            <td style="color:rgba(248,246,242,0.5)">${c.cliente_telefono || '—'}</td>
+            <td>${c.servicio_nombre || '—'}</td>
+            <td><span class="badge badge-${c.estado}">${badgeLabel(c.estado)}</span></td>
+            <td style="color:rgba(248,246,242,0.4);font-size:11px">${c.notas || ''}</td>
+            <td>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    ${c.estado !== 'completada' && c.estado !== 'cancelada' ? `
+                    <button class="btn btn-sm btn-success" onclick="cambiarEstado(${c.id},'completada')">✓</button>
+                    <button class="btn btn-sm btn-outline" onclick="cambiarEstado(${c.id},'confirmada')">Conf.</button>
+                    <button class="btn btn-sm btn-danger" onclick="cambiarEstado(${c.id},'cancelada')">✕</button>
+                    ` : `<span style="font-size:10px;color:rgba(248,246,242,0.3)">${badgeLabel(c.estado)}</span>`}
+                </div>
+            </td>
+        </tr>`
+    }).join('')
+}
+
+function badgeLabel(e) {
+    return { pendiente: 'En attente', confirmada: 'Confirmée', cancelada: 'Annulée', completada: 'Terminée' }[e] || e
+}
+
+async function cambiarEstado(id, estado) {
+    try {
+        await fetch(`${API}/citas/${id}/estado`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado })
+        })
+        toast('État mis à jour')
+        cargarCitas()
+    } catch(e) { toast('Erreur', 'error') }
+}
+
+// ═══════════════════════════════════════
+// SERVICIOS
+// ═══════════════════════════════════════
+async function cargarServicios() {
+    const grid = document.getElementById('grid-servicios')
+    try {
+        const res = await fetch(`${API}/servicios`)
+        todosServicios = await res.json() || []
+        if (!todosServicios.length) { grid.innerHTML = '<div class="empty">Aucun service.</div>'; return }
+        grid.innerHTML = todosServicios.map(s => `
+            <div class="servicio-card ${s.activo ? '' : 'inactivo'}">
+                <div class="sc-nombre">${s.nombre}</div>
+                <div class="sc-duracion">${s.duracion_minutos} min${s.permite_paralelo ? ' · <span style="color:var(--or)">parallèle</span>' : ''}</div>
+                <div class="sc-precio">${s.precio > 0 ? s.precio + ' €' : 'Sur devis'}</div>
+                ${s.descripcion ? `<p style="font-size:11px;color:rgba(248,246,242,0.4);margin-bottom:14px">${s.descripcion}</p>` : ''}
+                <div class="sc-actions">
+                    <button class="btn btn-sm btn-outline" onclick="editarServicio(${s.id})">Modifier</button>
+                    <button class="btn btn-sm btn-danger" onclick="eliminarServicio(${s.id})">Supprimer</button>
+                </div>
+            </div>
+        `).join('')
+    } catch(e) { grid.innerHTML = '<div class="empty">Erreur de chargement.</div>' }
+}
+
+function abrirModalServicio(s = null) {
+    document.getElementById('ms-id').value = s ? s.id : ''
+    document.getElementById('ms-nombre').value = s ? s.nombre : ''
+    document.getElementById('ms-descripcion').value = s ? (s.descripcion || '') : ''
+    document.getElementById('ms-duracion').value = s ? s.duracion_minutos : 60
+    document.getElementById('ms-duracion-activa').value = s ? (s.duracion_activa_minutos || 0) : 0
+    document.getElementById('ms-precio').value = s ? s.precio : 0
+    document.getElementById('ms-paralelo').checked = s ? !!s.permite_paralelo : false
+    document.getElementById('modal-servicio-title').innerHTML = s ? 'Modifier le <em>service</em>' : 'Nouveau <em>service</em>'
+    abrirModal('modal-servicio')
+}
+
+function editarServicio(id) {
+    const s = todosServicios.find(x => x.id === id)
+    if (s) abrirModalServicio(s)
+}
+
+async function guardarServicio() {
+    const id = document.getElementById('ms-id').value
+    const data = {
+        nombre: document.getElementById('ms-nombre').value.trim(),
+        descripcion: document.getElementById('ms-descripcion').value.trim(),
+        duracion_minutos: parseInt(document.getElementById('ms-duracion').value),
+        duracion_activa_minutos: parseInt(document.getElementById('ms-duracion-activa').value) || 0,
+        precio: parseFloat(document.getElementById('ms-precio').value),
+        permite_paralelo: document.getElementById('ms-paralelo').checked ? 1 : 0
+    }
+    if (!data.nombre) { toast('Le nom est obligatoire', 'error'); return }
+    try {
+        const method = id ? 'PUT' : 'POST'
+        const url = id ? `${API}/servicios/${id}` : `${API}/servicios`
+        await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        cerrarModal('modal-servicio')
+        toast('Service enregistré')
+        cargarServicios()
+    } catch(e) { toast('Erreur', 'error') }
+}
+
+async function eliminarServicio(id) {
+    if (!confirm('Supprimer ce service ?')) return
+    try {
+        await fetch(`${API}/servicios/${id}`, { method: 'DELETE' })
+        toast('Service supprimé')
+        cargarServicios()
+    } catch(e) { toast('Erreur', 'error') }
+}
+
+// ═══════════════════════════════════════
+// PRECIOS
+// ═══════════════════════════════════════
+async function cargarPrecios() {
+    const tbody = document.getElementById('tabla-precios')
+    try {
+        const res = await fetch(`${API}/admin/precios`)
+        const precios = await res.json() || []
+        if (!precios.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Aucun tarif.</td></tr>'; return }
+        tbody.innerHTML = precios.map(p => `
+            <tr>
+                <td style="color:var(--or)">${p.categoria}</td>
+                <td>${p.nombre}</td>
+                <td>${p.precio_min} €</td>
+                <td>${p.precio_max ? p.precio_max + ' €' : '—'}</td>
+                <td style="color:rgba(248,246,242,0.4)">${p.orden}</td>
+                <td><button class="btn btn-sm btn-outline" onclick="editarPrecio(${p.id},'${escapar(p.nombre)}',${p.precio_min},${p.precio_max||0})">Modifier</button></td>
+            </tr>
+        `).join('')
+    } catch(e) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Erreur de chargement.</td></tr>' }
+}
+
+function editarPrecio(id, nombre, min, max) {
+    document.getElementById('mp-id').value = id
+    document.getElementById('mp-nombre').value = nombre
+    document.getElementById('mp-min').value = min
+    document.getElementById('mp-max').value = max || ''
+    abrirModal('modal-precio')
+}
+
+async function guardarPrecio() {
+    const id = document.getElementById('mp-id').value
+    const min = parseFloat(document.getElementById('mp-min').value)
+    const max = document.getElementById('mp-max').value ? parseFloat(document.getElementById('mp-max').value) : null
+    try {
+        await fetch(`${API}/admin/precios/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ precio_min: min, precio_max: max })
+        })
+        cerrarModal('modal-precio')
+        toast('Tarif mis à jour')
+        cargarPrecios()
+    } catch(e) { toast('Erreur', 'error') }
+}
+
+// ═══════════════════════════════════════
+// BLOQUEOS
+// ═══════════════════════════════════════
+const diasFr = ['', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+
+async function cargarBloqueos() {
+    const lista = document.getElementById('lista-bloqueos')
+    try {
+        const res = await fetch(`${API}/bloqueos`)
+        const bloqueos = await res.json() || []
+        if (!bloqueos.length) { lista.innerHTML = '<div class="empty">Aucun blocage configuré.</div>'; return }
+        lista.innerHTML = bloqueos.map(b => {
+            const tipo = b.fecha ? `📅 ${formatFecha(b.fecha)}` : `🔁 ${diasFr[b.dia_semana] || 'Récurrent'}`
+            return `
+            <div class="bloqueo-card">
+                <div class="bloqueo-info">
+                    <div class="bloqueo-tipo">${tipo}</div>
+                    <div class="bloqueo-hora">${b.hora_inicio} → ${b.hora_fin}</div>
+                    ${b.nota ? `<div class="bloqueo-nota">${b.nota}</div>` : ''}
+                </div>
+                <button class="btn btn-sm btn-danger" onclick="eliminarBloqueo(${b.id})">Supprimer</button>
+            </div>`
+        }).join('')
+    } catch(e) { lista.innerHTML = '<div class="empty">Erreur de chargement.</div>' }
+}
+
+function abrirModalBloqueo() {
+    document.getElementById('mb-fecha').value = hoy
+    abrirModal('modal-bloqueo')
+}
+
+function toggleTipoBloqueo() {
+    const tipo = document.getElementById('mb-tipo').value
+    document.getElementById('mb-grupo-fecha').style.display = tipo === 'fecha' ? '' : 'none'
+    document.getElementById('mb-grupo-dia').style.display = tipo === 'dia' ? '' : 'none'
+}
+
+async function guardarBloqueo() {
+    const tipo = document.getElementById('mb-tipo').value
+    const data = {
+        hora_inicio: document.getElementById('mb-inicio').value,
+        hora_fin: document.getElementById('mb-fin').value,
+        nota: document.getElementById('mb-nota').value.trim(),
+        activo: 1
+    }
+    if (tipo === 'fecha') {
+        data.fecha = document.getElementById('mb-fecha').value
+        data.dia_semana = null
+    } else {
+        data.dia_semana = parseInt(document.getElementById('mb-dia').value)
+        data.fecha = null
+    }
+    if (!data.hora_inicio || !data.hora_fin) { toast('Remplissez les heures', 'error'); return }
+    try {
+        await fetch(`${API}/bloqueos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        cerrarModal('modal-bloqueo')
+        toast('Blocage créé')
+        cargarBloqueos()
+    } catch(e) { toast('Erreur', 'error') }
+}
+
+async function eliminarBloqueo(id) {
+    if (!confirm('Supprimer ce blocage ?')) return
+    try {
+        await fetch(`${API}/bloqueos/${id}`, { method: 'DELETE' })
+        toast('Blocage supprimé')
+        cargarBloqueos()
+    } catch(e) { toast('Erreur', 'error') }
+}
+
+// ═══════════════════════════════════════
+// CLIENTES
+// ═══════════════════════════════════════
+async function cargarClientes() {
+    const tbody = document.getElementById('tabla-clientes')
+    try {
+        const res = await fetch(`${API}/clientes`)
+        todosClientes = await res.json() || []
+        renderClientes(todosClientes)
+    } catch(e) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Erreur de chargement.</td></tr>' }
+}
+
+function renderClientes(lista) {
+    const tbody = document.getElementById('tabla-clientes')
+    if (!lista.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Aucun client.</td></tr>'; return }
+    tbody.innerHTML = lista.map(c => `
+        <tr class="cliente-row">
+            <td><strong>${c.nombre}</strong></td>
+            <td style="color:rgba(248,246,242,0.6)">${c.telefono || '—'}</td>
+            <td style="color:rgba(248,246,242,0.5);font-size:11px">${c.email || '—'}</td>
+            <td style="color:rgba(248,246,242,0.4);font-size:11px">${c.notas || ''}</td>
+            <td style="color:rgba(248,246,242,0.35);font-size:11px">${c.creado_en ? formatFecha(c.creado_en.substring(0,10)) : '—'}</td>
+            <td><button class="btn btn-sm btn-danger" onclick="eliminarCliente(${c.id})">Supprimer</button></td>
+        </tr>
+    `).join('')
+}
+
+function filtrarClientes() {
+    const q = document.getElementById('buscar-cliente').value.toLowerCase()
+    renderClientes(todosClientes.filter(c =>
+        c.nombre.toLowerCase().includes(q) ||
+        (c.telefono && c.telefono.includes(q)) ||
+        (c.email && c.email.toLowerCase().includes(q))
+    ))
+}
+
+async function eliminarCliente(id) {
+    if (!confirm('Supprimer ce client ?')) return
+    try {
+        await fetch(`${API}/clientes/${id}`, { method: 'DELETE' })
+        toast('Client supprimé')
+        cargarClientes()
+    } catch(e) { toast('Erreur', 'error') }
+}
+
+// ═══════════════════════════════════════
+// PARAMÈTRES
+// ═══════════════════════════════════════
+async function cargarConfig() {
+    const res = await fetch('/admin/config')
+    if (!res.ok) return
+    const data = await res.json()
+    document.getElementById('cfg-usuario').value = data.usuario || ''
+}
+
+async function guardarConfig() {
+    const usuario = document.getElementById('cfg-usuario').value.trim()
+    const actual = document.getElementById('cfg-pwd-actual').value
+    const nueva = document.getElementById('cfg-pwd-nueva').value
+    const confirma = document.getElementById('cfg-pwd-confirma').value
+    const msg = document.getElementById('cfg-msg')
+    msg.style.display = 'none'
+    if (!usuario || !actual || !nueva) {
+        msg.style.color = '#e24b4a'; msg.textContent = 'Tous les champs sont requis.'; msg.style.display = 'block'; return
+    }
+    if (nueva !== confirma) {
+        msg.style.color = '#e24b4a'; msg.textContent = 'Les mots de passe ne correspondent pas.'; msg.style.display = 'block'; return
+    }
+    const res = await fetch('/admin/config', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario, password_actual: actual, password_nueva: nueva })
+    })
+    if (res.ok) {
+        msg.style.color = '#6fcf97'; msg.textContent = 'Modifications enregistrées.'
+        document.getElementById('cfg-pwd-actual').value = ''
+        document.getElementById('cfg-pwd-nueva').value = ''
+        document.getElementById('cfg-pwd-confirma').value = ''
+    } else {
+        const txt = await res.text()
+        msg.style.color = '#e24b4a'; msg.textContent = txt || 'Erreur lors de la mise à jour.'
+    }
+    msg.style.display = 'block'
+}
+
+async function logout() {
+    await fetch('/admin/logout')
+    window.location.href = '/admin/login'
+}
+
+// ── Utilidades ──
+function formatFecha(f) {
+    if (!f) return '—'
+    const d = new Date(f + 'T12:00:00')
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+function escapar(str) { return (str||'').replace(/'/g, "\\'").replace(/"/g, '&quot;') }
+
+// ── Init ──
+cargarCitas()
+</script>
+</body>
+</html>

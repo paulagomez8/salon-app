@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clémence · Votre Salon Privé</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --noir: #0a0a0a;
+            --blanc: #f8f6f2;
+            --gris: #888;
+            --gris-clair: #e8e5e0;
+            --or: #c9a96e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: var(--blanc);
+            color: var(--noir);
+            overflow-x: hidden;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 28px 60px;
+            mix-blend-mode: normal;
+            transition: background 0.4s, padding 0.4s;
+        }
+        nav.scrolled {
+            background: rgba(248,246,242,0.95);
+            backdrop-filter: blur(8px);
+            padding: 16px 60px;
+            border-bottom: 1px solid var(--gris-clair);
+        }
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--blanc);
+            transition: color 0.4s;
+        }
+        nav.scrolled .nav-logo { color: var(--noir); }
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+        .nav-links a {
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--blanc);
+            transition: color 0.3s, opacity 0.3s;
+            opacity: 0.85;
+        }
+        nav.scrolled .nav-links a { color: var(--noir); }
+        .nav-links a:hover { opacity: 1; }
+
+        /* ── HERO ── */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2520 50%, #1a1a1a 100%);
+        }
+        /* Grille décorative */
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(201,169,110,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201,169,110,0.06) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 60%, rgba(201,169,110,0.12) 0%, transparent 60%);
+        }
+        /* Fotos en blanco y negro */
+        .hero-photos {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            opacity: 0.18;
+            filter: grayscale(100%) contrast(1.2);
+        }
+        .hero-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 80px 60px;
+            width: 100%;
+        }
+        .hero-eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--or);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .hero-eyebrow::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 1px;
+            background: var(--or);
+        }
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(52px, 8vw, 110px);
+            font-weight: 300;
+            line-height: 0.95;
+            color: var(--blanc);
+            margin-bottom: 8px;
+        }
+        .hero-title em {
+            font-style: italic;
+            color: var(--or);
+        }
+        .hero-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(16px, 2vw, 22px);
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(248,246,242,0.5);
+            margin-bottom: 56px;
+        }
+        .hero-cta {
+            display: inline-block;
+            padding: 16px 48px;
+            border: 1px solid var(--or);
+            color: var(--or);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            transition: background 0.3s, color 0.3s;
+        }
+        .hero-cta:hover {
+            background: var(--or);
+            color: var(--noir);
+        }
+
+        /* Scroll indicator */
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            right: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 2;
+        }
+        .scroll-hint span {
+            font-size: 9px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: rgba(248,246,242,0.4);
+            writing-mode: vertical-rl;
+        }
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, rgba(201,169,110,0.6), transparent);
+            animation: scrollDown 2s ease-in-out infinite;
+        }
+        @keyframes scrollDown {
+            0% { transform: scaleY(0); transform-origin: top; }
+            50% { transform: scaleY(1); transform-origin: top; }
+            51% { transform: scaleY(1); transform-origin: bottom; }
+            100% { transform: scaleY(0); transform-origin: bottom; }
+        }
+
+        /* ── SECTION BASE ── */
+        section { padding: 120px 60px; }
+
+        .section-label {
+            font-size: 10px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--or);
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(36px, 5vw, 64px);
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+        .section-title em { font-style: italic; }
+        .section-text {
+            font-size: 14px;
+            line-height: 1.9;
+            color: var(--gris);
+            max-width: 520px;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── SOBRE NOSOTRAS ── */
+        .sobre {
+            background: var(--noir);
+            color: var(--blanc);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+        .sobre .section-text { color: rgba(248,246,242,0.6); }
+        .sobre-img-wrap {
+            position: relative;
+        }
+        .sobre-img {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            filter: grayscale(100%);
+            display: block;
+        }
+        .sobre-img-deco {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 60%;
+            height: 60%;
+            border: 1px solid rgba(201,169,110,0.3);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .sobre-img-wrap { z-index: 1; }
+
+        /* ── SERVICIOS ── */
+        .servicios { background: var(--blanc); }
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            margin-top: 64px;
+            background: var(--gris-clair);
+            border: 1px solid var(--gris-clair);
+        }
+        .servicio-card {
+            background: var(--blanc);
+            padding: 48px 40px;
+            transition: background 0.3s;
+            cursor: default;
+        }
+        .servicio-card:hover { background: var(--noir); }
+        .servicio-card:hover .servicio-nombre,
+        .servicio-card:hover .servicio-desc,
+        .servicio-card:hover .servicio-duracion { color: var(--blanc); }
+        .servicio-card:hover .servicio-duracion { color: var(--or); }
+        .servicio-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 48px;
+            font-weight: 300;
+            color: var(--gris-clair);
+            line-height: 1;
+            margin-bottom: 24px;
+            transition: color 0.3s;
+        }
+        .servicio-card:hover .servicio-num { color: rgba(201,169,110,0.2); }
+        .servicio-nombre {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 400;
+            margin-bottom: 12px;
+            transition: color 0.3s;
+        }
+        .servicio-desc {
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--gris);
+            margin-bottom: 20px;
+            font-weight: 300;
+            transition: color 0.3s;
+        }
+        .servicio-duracion {
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gris);
+            transition: color 0.3s;
+        }
+
+        /* ── TÉCNICAS ── */
+        .tecnicas {
+            background: #0f0f0f;
+            color: var(--blanc);
+        }
+        .tecnicas-list {
+            margin-top: 64px;
+            display: flex;
+            flex-direction: column;
+        }
+        .tecnica-item {
+            display: grid;
+            grid-template-columns: 60px 1fr auto;
+            align-items: center;
+            gap: 40px;
+            padding: 32px 0;
+            border-bottom: 1px solid rgba(248,246,242,0.08);
+            transition: padding-left 0.3s;
+            cursor: default;
+        }
+        .tecnica-item:hover { padding-left: 16px; }
+        .tecnica-item:hover .tecnica-nombre { color: var(--or); }
+        .tecnica-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 13px;
+            color: var(--or);
+            letter-spacing: 0.1em;
+        }
+        .tecnica-nombre {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 300;
+            transition: color 0.3s;
+        }
+        .tecnica-desc {
+            font-size: 12px;
+            color: rgba(248,246,242,0.4);
+            letter-spacing: 0.05em;
+            text-align: right;
+        }
+
+        /* ── PRODUCTOS ── */
+        .productos { background: var(--blanc); }
+        .productos-intro {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: end;
+            margin-bottom: 64px;
+        }
+        .productos-marcas {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--gris-clair);
+            border: 1px solid var(--gris-clair);
+        }
+        .marca-card {
+            background: var(--blanc);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .marca-nombre {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+        .marca-tipo {
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gris);
+        }
+        .marca-desc {
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--gris);
+            font-weight: 300;
+        }
+
+        /* ── AGENDA ── */
+        .agenda-section {
+            background: var(--noir);
+            color: var(--blanc);
+            text-align: center;
+            padding: 140px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        .agenda-section::before {
+            content: 'RENDEZ-VOUS';
+            position: absolute;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 180px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.03);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            pointer-events: none;
+            letter-spacing: 0.1em;
+        }
+        .agenda-section .section-label { justify-content: center; display: flex; align-items: center; gap: 16px; }
+        .agenda-section .section-label::before,
+        .agenda-section .section-label::after {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 1px;
+            background: var(--or);
+        }
+        .agenda-section .section-title { color: var(--blanc); }
+        .agenda-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-style: italic;
+            color: rgba(248,246,242,0.5);
+            margin-bottom: 56px;
+            font-weight: 300;
+        }
+        .agenda-btn {
+            display: inline-block;
+            padding: 20px 64px;
+            background: var(--or);
+            color: var(--noir);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            font-weight: 400;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .agenda-btn:hover {
+            background: #b8935a;
+            transform: translateY(-2px);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: #050505;
+            color: rgba(248,246,242,0.4);
+            padding: 60px;
+        }
+        .footer-inner {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            padding-bottom: 48px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 32px;
+        }
+        .footer-brand {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            font-weight: 300;
+            color: var(--blanc);
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+        }
+        .footer-tagline {
+            font-size: 12px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+        .footer-col-title {
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--or);
+            margin-bottom: 20px;
+        }
+        .footer-col p, .footer-col a {
+            font-size: 13px;
+            line-height: 2;
+            display: block;
+            text-decoration: none;
+            color: rgba(248,246,242,0.4);
+            transition: color 0.2s;
+            font-weight: 300;
+        }
+        .footer-col a:hover { color: var(--blanc); }
+        .footer-map-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--or);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .footer-map-btn:hover { opacity: 0.7; }
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        /* ── TARIFAS ── */
+        .tarif-list { display: flex; flex-direction: column; gap: 0; }
+        .tarif-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(248,246,242,0.06);
+            font-size: 13px;
+            font-weight: 300;
+            color: rgba(248,246,242,0.7);
+            gap: 16px;
+        }
+        .tarif-row span:last-child {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            color: var(--blanc);
+            white-space: nowrap;
+        }
+        @media (max-width: 900px) {
+            .tarifs-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* ── ANIMACIONES DE ENTRADA ── */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            nav { padding: 20px 24px; }
+            nav.scrolled { padding: 14px 24px; }
+            .nav-links { gap: 20px; }
+            section { padding: 80px 24px; }
+            .hero-content { padding: 60px 24px; }
+            .sobre { grid-template-columns: 1fr; }
+            .sobre-img-wrap { display: none; }
+            .servicios-grid { grid-template-columns: 1fr; }
+            .productos-intro { grid-template-columns: 1fr; gap: 40px; }
+            .productos-marcas { grid-template-columns: 1fr; }
+            .footer-inner { grid-template-columns: 1fr 1fr; gap: 40px; }
+            .tecnica-item { grid-template-columns: 40px 1fr; }
+            .tecnica-desc { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+<div class="nav-logo">Clémence · Votre Salon Privé</div>
+<a href="/admin" style="font-size:12px;color:rgba(201,169,110,0.5);text-decoration:none;margin-left:16px" onmouseover="this.style.color='#c9a96e'" onmouseout="this.style.color='rgba(201,169,110,0.5)'">⚙</a>
+<ul class="nav-links">
+        <li><a href="#servicios">Services</a></li>
+        <li><a href="#tecnicas">Tarifs</a></li>
+        <li><a href="#productos">Produits</a></li>
+        <li><a href="#agenda">Rendez-vous</a></li>
+    </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-photos">
+        <img class="hero-photo" src="SalonI.jpg" alt="Salon" onerror="this.style.display='none'">
+        <div style="background: linear-gradient(to bottom, #2d2520, #1a1a1a)"></div>
+    </div>
+    <div class="hero-content">
+        <div class="hero-eyebrow">Salon Privé · Mèze</div>
+        <h1 class="hero-title">
+            <em>Clémence</em><br>
+            Votre Salon
+        </h1>
+        <p class="hero-subtitle">· Privé ·</p>
+        <a href="#agenda" class="hero-cta">Prendre Rendez-vous</a>
+    </div>
+    <div class="scroll-hint">
+        <div class="scroll-line"></div>
+        <span>Découvrir</span>
+    </div>
+</section>
+
+<!-- SOBRE -->
+<section class="sobre" id="sobre">
+    <div class="fade-up">
+        <p class="section-label">Notre Histoire</p>
+        <h2 class="section-title">Un espace<br><em>rien que pour vous</em></h2>
+        <p class="section-text">
+            Bienvenue dans votre salon privé, un lieu pensé pour l'excellence et la sérénité. Ici, chaque rendez-vous est une expérience unique, personnalisée selon votre nature et vos envies. Loin de l'agitation, nous prenons le temps qu'il faut.
+        </p>
+        <br><br>
+        <p class="section-text">
+            Clémence vous accueille dans un cadre intimiste où savoir-faire artisanal et produits d'exception se rencontrent pour révéler votre beauté la plus authentique.
+        </p>
+    </div>
+    <div class="sobre-img-wrap fade-up">
+        <div class="sobre-img-deco"></div>
+        <img class="sobre-img" src="SalonI.jpg" alt="Salon" onerror="this.style.background='#222'; this.style.height='400px'">
+    </div>
+</section>
+
+<!-- SERVICIOS -->
+<section class="servicios" id="servicios">
+    <p class="section-label fade-up">Nos Services</p>
+    <h2 class="section-title fade-up">Ce que nous<br><em>offrons</em></h2>
+    <div class="servicios-grid">
+        <div class="servicio-card fade-up">
+            <div class="servicio-num">01</div>
+            <div class="servicio-nombre">Coupe & Brushing</div>
+            <p class="servicio-desc">Shampooing, coupe et brushing soignés selon votre longueur et votre style. Pour femmes, hommes et enfants.</p>
+            <span class="servicio-duracion">Dès 10 €</span>
+        </div>
+        <div class="servicio-card fade-up">
+            <div class="servicio-num">02</div>
+            <div class="servicio-nombre">Coloration</div>
+            <p class="servicio-desc">Coloration complète avec brushing inclus. Des formules longue durée pour un résultat lumineux et uniforme.</p>
+            <span class="servicio-duracion">Dès 43 €</span>
+        </div>
+        <div class="servicio-card fade-up">
+            <div class="servicio-num">03</div>
+            <div class="servicio-nombre">Balayage & Patine</div>
+            <p class="servicio-desc">Balayage, patine et brushing pour des reflets naturels et une lumière subtile qui sublime votre couleur.</p>
+            <span class="servicio-duracion">Dès 68 €</span>
+        </div>
+        <div class="servicio-card fade-up">
+            <div class="servicio-num">04</div>
+            <div class="servicio-nombre">Lissage Ybera</div>
+            <p class="servicio-desc">Lissage professionnel longue durée. Cheveux disciplinés, brillants et légers pour plusieurs mois.</p>
+            <span class="servicio-duracion">140 € – 300 €</span>
+        </div>
+        <div class="servicio-card fade-up">
+            <div class="servicio-num">05</div>
+            <div class="servicio-nombre">Coiffures & Mariages</div>
+            <p class="servicio-desc">Chignons, tresses africaines, coiffures de mariée avec essai. Un moment unique pour vos occasions spéciales.</p>
+            <span class="servicio-duracion">Dès 25 €</span>
+        </div>
+        <div class="servicio-card fade-up">
+            <div class="servicio-num">06</div>
+            <div class="servicio-nombre">Hommes & Enfants</div>
+            <p class="servicio-desc">Coupe homme avec shampooing et coiffage, égalisation barbe, cover. Coupe enfant et bébé aussi disponibles.</p>
+            <span class="servicio-duracion">Dès 10 €</span>
+        </div>
+    </div>
+</section>
+
+<!-- TARIFAS -->
+<section class="tecnicas" id="tecnicas">
+    <p class="section-label fade-up">Transparence</p>
+    <h2 class="section-title fade-up">Les <em>tarifs</em></h2>
+
+    <!-- Femmes -->
+    <div style="margin-top: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px;" class="fade-up tarifs-grid">
+
+        <div>
+            <p style="font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; color:var(--or); margin-bottom:24px;">Cheveux courts</p>
+            <div class="tarif-list">
+                <div class="tarif-row"><span>Shampooing brushing</span><span>16 €</span></div>
+                <div class="tarif-row"><span>Shampooing coupe brushing</span><span>35 €</span></div>
+                <div class="tarif-row"><span>Coloration brushing</span><span>43 €</span></div>
+                <div class="tarif-row"><span>Coloration coupe brushing</span><span>55 €</span></div>
+                <div class="tarif-row"><span>Balayage patine brushing</span><span>68 €</span></div>
+                <div class="tarif-row"><span>Balayage patine coupe brushing</span><span>82 €</span></div>
+            </div>
+
+            <p style="font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; color:var(--or); margin:36px 0 24px;">Cheveux carrés ou mi-longs</p>
+            <div class="tarif-list">
+                <div class="tarif-row"><span>Shampooing brushing</span><span>20 €</span></div>
+                <div class="tarif-row"><span>Shampooing coupe brushing</span><span>40 €</span></div>
+                <div class="tarif-row"><span>Coloration brushing</span><span>47 €</span></div>
+                <div class="tarif-row"><span>Coloration coupe brushing</span><span>60 €</span></div>
+                <div class="tarif-row"><span>Balayage patine brushing</span><span>92 €</span></div>
+                <div class="tarif-row"><span>Balayage patine coupe brushing</span><span>110 €</span></div>
+            </div>
+        </div>
+
+        <div>
+            <p style="font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; color:var(--or); margin-bottom:24px;">Cheveux longs</p>
+            <div class="tarif-list">
+                <div class="tarif-row"><span>Shampooing brushing</span><span>25 €</span></div>
+                <div class="tarif-row"><span>Shampooing coupe brushing</span><span>45 €</span></div>
+                <div class="tarif-row"><span>Coloration brushing</span><span>52 €</span></div>
+                <div class="tarif-row"><span>Coloration coupe brushing</span><span>65 €</span></div>
+                <div class="tarif-row"><span>Balayage patine brushing</span><span>120 €</span></div>
+                <div class="tarif-row"><span>Balayage patine coupe brushing</span><span>140 €</span></div>
+            </div>
+
+            <p style="font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; color:var(--or); margin:36px 0 24px;">Supplément coloration longueurs</p>
+            <div class="tarif-list">
+                <div class="tarif-row"><span>Cheveux courts</span><span>7 €</span></div>
+                <div class="tarif-row"><span>Cheveux mi-longs</span><span>13 €</span></div>
+                <div class="tarif-row"><span>Cheveux longs</span><span>19 €</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="width:60px; height:1px; background:rgba(201,169,110,0.3); margin:64px 0;"></div>
+
+    <!-- Hommes, enfants, lissage, mariages -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;" class="fade-up tarifs-grid">
+        <div>
+            <p style="font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; color:var(--or); margin-bottom:24px;">Hommes</p>
+            <div class="tarif-list">
+                <div class="tarif-row"><span>Shampooing coupe coiffage</span><span>18 €</span></div>
+                <div class="tarif-row"><span>Shampooing coupe égalisation barbe</span><span>25 €</span></div>
+                <div class="tarif-row"><span>Shampooing coupe + cover</span><span>28 €</span></div>
+                <div class="tarif-row"><span>Décoloration tête complète</span><span>70 – 100 €</span></div>
+                <div class="tarif-row"><span>Défrisage / lissage</span><span>60 – 120 €</span></div>
+            </div>
+
+            <p style="font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; color:var(--or); margin:36px 0 24px;">Enfants</p>
+            <div class="tarif-list">
+                <div class="tarif-row"><span>Shampooing coupe enfant*</span><span>15 €</span></div>
+                <div class="tarif-row"><span>Coupe bébé</span><span>10 €</span></div>
+                <div class="tarif-row"><span>Shampooing coupe brushing adolescentes</span><span>20 €</span></div>
+            </div>
+            <p style="font-size:11px; color:rgba(248,246,242,0.3); margin-top:12px; font-style:italic;">* coupes enfants jusqu'à 13 ans</p>
+        </div>
+
+        <div>
+            <p style="font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; color:var(--or); margin-bottom:24px;">Lissage Ybera</p>
+            <div class="tarif-list">
+                <div class="tarif-row"><span>Cheveux courts</span><span>140 – 160 €</span></div>
+                <div class="tarif-row"><span>Cheveux mi-longs</span><span>160 – 180 €</span></div>
+                <div class="tarif-row"><span>Cheveux longs</span><span>200 – 300 €</span></div>
+            </div>
+
+            <p style="font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; color:var(--or); margin:36px 0 24px;">Coiffures & Mariage</p>
+            <div class="tarif-list">
+                <div class="tarif-row"><span>Coiffures et attaches</span><span>40 – 60 €</span></div>
+                <div class="tarif-row"><span>Chignon classique</span><span>25 €</span></div>
+                <div class="tarif-row"><span>Tresses africaines</span><span>10 – 20 €</span></div>
+                <div class="tarif-row"><span>Forfait coiffure mariée + essai</span><span>120 – 200 €</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRODUCTOS -->
+<section class="productos" id="productos">
+    <div class="productos-intro">
+        <div class="fade-up">
+            <p class="section-label">Produits d'Exception</p>
+            <h2 class="section-title">Des marques<br><em>sélectionnées</em><br>avec soin</h2>
+        </div>
+        <p class="section-text fade-up">
+            Nous travaillons exclusivement avec des marques professionnelles reconnues pour leur qualité, leur innovation et leur respect du cheveu. Chaque produit est choisi pour son efficacité et ses formules premium.
+        </p>
+    </div>
+    <div class="productos-marcas">
+        <div class="marca-card fade-up">
+            <div class="marca-nombre">Wella Professionals</div>
+            <div class="marca-tipo">Coloration · Soins</div>
+            <p class="marca-desc">Leader mondial en coloration professionnelle. Des nuances infinies, une tenue exceptionnelle.</p>
+        </div>
+        <div class="marca-card fade-up">
+            <div class="marca-nombre">L'Oréal Professionnel</div>
+            <div class="marca-tipo">Coloration · Styling</div>
+            <p class="marca-desc">Innovation française au service de la beauté. Des formules avancées pour des résultats sublimes.</p>
+        </div>
+        <div class="marca-card fade-up">
+            <div class="marca-nombre">Kérastase</div>
+            <div class="marca-tipo">Soins Premium</div>
+            <p class="marca-desc">Le luxe capillaire par excellence. Des rituels haute-couture pour des cheveux d'exception.</p>
+        </div>
+    </div>
+</section>
+
+<!-- AGENDA -->
+<section class="agenda-section" id="agenda">
+    <p class="section-label fade-up">Réservation</p>
+    <h2 class="section-title fade-up">Prenez<br><em>votre rendez-vous</em></h2>
+    <p class="agenda-quote fade-up">« Chaque rendez-vous est une promesse de beauté »</p>
+    <a href="/reservar" class="agenda-btn fade-up">Réserver en ligne</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-inner">
+        <div>
+            <div class="footer-brand">Clémence · Votre Salon Privé</div>
+            <p class="footer-tagline">Un espace d'exception dédié à votre beauté.<br>Sur rendez-vous uniquement.</p>
+        </div>
+        <div class="footer-col">
+            <p class="footer-col-title">Localisation</p>
+            <p>Chemin de Costes<br>Mèze, France</p>
+            <a href="https://maps.google.com/?q=Chemin+de+Costes,+Meze,+France" target="_blank" class="footer-map-btn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Voir sur la carte
+            </a>
+        </div>
+        <div class="footer-col">
+            <p class="footer-col-title">Contact</p>
+            <a href="tel:+33688971157">+33 6 88 97 11 57</a>
+            <a href="https://instagram.com/votre_salon_prive_meze" target="_blank">@votre_salon_prive_meze</a>
+            <a href="https://facebook.com" target="_blank">Clémence Votre·Salon·Privé</a>
+        </div>
+        <div class="footer-col">
+            <p class="footer-col-title">Horaires</p>
+            <p>Lundi – Samedi</p>
+            <p>08h00 – 19h00</p>
+            <br>
+            <p>Sur rendez-vous</p>
+        </div>
+    </div>
+   <div class="footer-bottom">
+    <span>© 2026 Clémence Votre Salon Privé</span>
+    <span>Mèze · France</span>
+    <a href="/admin" style="font-size:10px;letter-spacing:0.2em;color:rgba(248,246,242,0.15);text-decoration:none;text-transform:uppercase;transition:color 0.3s" onmouseover="this.style.color='rgba(201,169,110,0.6)'" onmouseout="this.style.color='rgba(248,246,242,0.15)'">Admin</a>
+</div>
+</footer>
+
+<script>
+    // Nav scroll
+    const navbar = document.getElementById('navbar')
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 60)
+    })
+
+    // Fade up al hacer scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => entry.target.classList.add('visible'), i * 80)
+                observer.unobserve(entry.target)
+            }
+        })
+    }, { threshold: 0.1 })
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el))
+</script>
+</body>
+</html>
