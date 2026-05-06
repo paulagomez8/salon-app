@@ -430,7 +430,7 @@ select option { background: #f5ede8; color: #2a1f1a; }
                 <input type="number" id="ms-duracion-activa" min="0" step="5" value="0" class="form-input">
             </div>
             <div class="form-group" style="justify-content:flex-end;padding-top:24px">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:11px;color:rgba(248,246,242,0.6)">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:11px;color:rgba(42,31,26,0.7)">
                     <input type="checkbox" id="ms-paralelo" style="width:auto;padding:0;border:none">
                     Permet parallèle
                 </label>
@@ -773,10 +773,10 @@ function renderLista(citas) {
         return `<tr>
             <td><strong>${hora}</strong></td>
             <td>${c.cliente_nombre || '—'}</td>
-            <td style="color:rgba(248,246,242,0.5)">${c.cliente_telefono || '—'}</td>
+            <td style="color:rgba(42,31,26,0.6)">${c.cliente_telefono || '—'}</td>
             <td>${c.servicio_nombre || '—'}</td>
             <td><span class="badge badge-${c.estado}">${badgeLabel(c.estado)}</span></td>
-            <td style="color:rgba(248,246,242,0.4);font-size:11px">${c.notas || ''}</td>
+            <td style="color:rgba(42,31,26,0.5);font-size:11px">${c.notas || ''}</td>
             <td>
                 <div style="display:flex;gap:6px;flex-wrap:wrap">
                     ${c.estado !== 'completada' && c.estado !== 'cancelada' ? `
@@ -820,7 +820,7 @@ async function cargarServicios() {
                 <div class="sc-nombre">${s.nombre}</div>
                 <div class="sc-duracion">${s.duracion_minutos} min${s.permite_paralelo ? ' · <span style="color:var(--or)">parallèle</span>' : ''}</div>
                 <div class="sc-precio">${s.precio > 0 ? s.precio + ' €' : 'Sur devis'}</div>
-                ${s.descripcion ? `<p style="font-size:11px;color:rgba(248,246,242,0.4);margin-bottom:14px">${s.descripcion}</p>` : ''}
+                ${s.descripcion ? `<p style="font-size:11px;color:rgba(42,31,26,0.5);margin-bottom:14px">${s.descripcion}</p>` : ''}
                 <div class="sc-actions">
                     <button class="btn btn-sm btn-outline" onclick="editarServicio(${s.id})">Modifier</button>
                     <button class="btn btn-sm btn-danger" onclick="eliminarServicio(${s.id})">Supprimer</button>
@@ -855,7 +855,7 @@ async function guardarServicio() {
         duracion_minutos: parseInt(document.getElementById('ms-duracion').value),
         duracion_activa_minutos: parseInt(document.getElementById('ms-duracion-activa').value) || 0,
         precio: parseFloat(document.getElementById('ms-precio').value),
-        permite_paralelo: document.getElementById('ms-paralelo').checked ? 1 : 0
+        permite_paralelo: document.getElementById('ms-paralelo').checked,
     }
     if (!data.nombre) { toast('Le nom est obligatoire', 'error'); return }
     try {
@@ -892,7 +892,7 @@ async function cargarPrecios() {
                 <td>${p.nombre}</td>
                 <td>${p.precio_min} €</td>
                 <td>${p.precio_max ? p.precio_max + ' €' : '—'}</td>
-                <td style="color:rgba(248,246,242,0.4)">${p.orden}</td>
+                <td style="color:rgba(42,31,26,0.5)">${p.orden}</td>
                 <td><button class="btn btn-sm btn-outline" onclick="editarPrecio(${p.id},'${escapar(p.nombre)}',${p.precio_min},${p.precio_max||0})">Modifier</button></td>
             </tr>
         `).join('')
@@ -1015,10 +1015,10 @@ function renderClientes(lista) {
     tbody.innerHTML = lista.map(c => `
         <tr class="cliente-row">
             <td><strong>${c.nombre}</strong></td>
-            <td style="color:rgba(248,246,242,0.6)">${c.telefono || '—'}</td>
-            <td style="color:rgba(248,246,242,0.5);font-size:11px">${c.email || '—'}</td>
-            <td style="color:rgba(248,246,242,0.4);font-size:11px">${c.notas || ''}</td>
-            <td style="color:rgba(248,246,242,0.35);font-size:11px">${c.creado_en ? formatFecha(c.creado_en.substring(0,10)) : '—'}</td>
+            <td style="color:rgba(42,31,26,0.7)">${c.telefono || '—'}</td>
+            <td style="color:rgba(42,31,26,0.6);font-size:11px">${c.email || '—'}</td>
+            <td style="color:rgba(42,31,26,0.5);font-size:11px">${c.notas || ''}</td>
+            <td style="color:rgba(42,31,26,0.45);font-size:11px">${c.creado_en ? formatFecha(c.creado_en.substring(0,10)) : '—'}</td>
             <td><button class="btn btn-sm btn-danger" onclick="eliminarCliente(${c.id})">Supprimer</button></td>
         </tr>
     `).join('')
@@ -1036,7 +1036,12 @@ function filtrarClientes() {
 async function eliminarCliente(id) {
     if (!confirm('Supprimer ce client ?')) return
     try {
-        await fetch(`${API}/clientes/${id}`, { method: 'DELETE' })
+        const res = await fetch(`${API}/clientes/${id}`, { method: 'DELETE' })
+        if (!res.ok) {
+            const msg = await res.text()
+            toast(msg, 'error')
+            return
+        }
         toast('Client supprimé')
         cargarClientes()
     } catch(e) { toast('Erreur', 'error') }

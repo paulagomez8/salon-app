@@ -62,7 +62,7 @@ func EliminarCliente(ctx *fasthttp.RequestCtx) {
 	_, err := db.DB.Exec("DELETE FROM clientes WHERE id = ?", id)
 	if err != nil {
 		ctx.SetStatusCode(500)
-		ctx.SetBodyString("Error al eliminar cliente")
+		ctx.SetBodyString("No se puede eliminar, el cliente tiene citas asociadas")
 		return
 	}
 	ctx.SetBodyString("Cliente eliminado")

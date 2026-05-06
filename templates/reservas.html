@@ -672,13 +672,17 @@ textarea.input-field {
             </div>
 
             <div class="fields-wrap">
-                <div class="field-group">
+               <div class="field-group">
                     <label class="field-label">Nom complet</label>
                     <input type="text" class="input-field" id="nombre" placeholder="Votre nom et prénom">
                 </div>
                 <div class="field-group">
                     <label class="field-label">Téléphone</label>
                     <input type="tel" class="input-field" id="telefono" placeholder="+33 6 00 00 00 00">
+                </div>
+                <div class="field-group">
+                    <label class="field-label">E-mail (optionnel)</label>
+                    <input type="email" class="input-field" id="email" placeholder="Votre adresse e-mail">
                 </div>
                 <div class="field-group">
                     <label class="field-label">Note (optionnel)</label>
@@ -847,7 +851,8 @@ textarea.input-field {
         const nombre = document.getElementById('nombre').value.trim()
         const telefono = document.getElementById('telefono').value.trim()
         const notas = document.getElementById('notas').value.trim()
-
+        const email = document.getElementById('email').value.trim()
+        
         if (!nombre || !telefono) { 
             mostrarError('err-3'); 
             return 
@@ -866,6 +871,7 @@ textarea.input-field {
                 body: JSON.stringify({
                     nombre,
                     telefono,
+                    email,
                     servicio_id: selServicioID,
                     fecha_hora: fechaHora,
                     notas

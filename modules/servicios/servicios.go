@@ -42,7 +42,7 @@ func CrearServicio(ctx *fasthttp.RequestCtx) {
 	var s Servicio
 	if err := json.Unmarshal(ctx.PostBody(), &s); err != nil {
 		ctx.SetStatusCode(400)
-		ctx.SetBodyString("Datos inválidos")
+		ctx.SetBodyString("Datos inválidos: " + err.Error())
 		return
 	}
 

@@ -251,6 +251,7 @@ func ReservarCita(ctx *fasthttp.RequestCtx) {
 	var body struct {
 		Nombre     string `json:"nombre"`
 		Telefono   string `json:"telefono"`
+		Email      string `json:"email"`
 		ServicioID int    `json:"servicio_id"`
 		FechaHora  string `json:"fecha_hora"`
 		Notas      string `json:"notas"`
@@ -338,8 +339,8 @@ func ReservarCita(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			res, err := db.DB.Exec(
-				"INSERT INTO clientes (nombre, telefono) VALUES (?, ?)",
-				body.Nombre, body.Telefono,
+				"INSERT INTO clientes (nombre, telefono, email) VALUES (?, ?, ?)",
+				body.Nombre, body.Telefono, body.Email,
 			)
 			if err != nil {
 				log.Println("ERROR INSERT CLIENTE:", err)
@@ -370,11 +371,12 @@ func ReservarCita(ctx *fasthttp.RequestCtx) {
 		body.Notas,
 	)
 
-	log.Println("🔥 ERROR MYSQL REAL:", err)
-	ctx.SetStatusCode(500)
-	ctx.SetBodyString(err.Error())
-	return
-
+	if err != nil {
+		log.Println("🔥 ERROR MYSQL REAL:", err)
+		ctx.SetStatusCode(500)
+		ctx.SetBodyString(err.Error())
+		return
+	}
 	ctx.SetStatusCode(201)
 	ctx.SetBodyString("Cita creada")
 }
