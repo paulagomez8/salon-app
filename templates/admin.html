@@ -597,7 +597,7 @@ async function cargarCitas() {
     try {
         const [resCitas, resBloqueos] = await Promise.all([
             fetch(`${API}/citas`),
-            fetch(`${API}/bloqueos`)
+            fetch(`${API}/admin/bloqueos`)
         ])
         const todasCitas = await resCitas.json() || []
         const todosBloqueos = await resBloqueos.json() || []
@@ -931,7 +931,7 @@ const diasFr = ['', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi',
 async function cargarBloqueos() {
     const lista = document.getElementById('lista-bloqueos')
     try {
-        const res = await fetch(`${API}/bloqueos`)
+        const res = await fetch(`${API}/admin/bloqueos`)
         const bloqueos = await res.json() || []
         if (!bloqueos.length) { lista.innerHTML = '<div class="empty">Aucun blocage configuré.</div>'; return }
         lista.innerHTML = bloqueos.map(b => {
@@ -977,7 +977,7 @@ async function guardarBloqueo() {
     }
     if (!data.hora_inicio || !data.hora_fin) { toast('Remplissez les heures', 'error'); return }
     try {
-        await fetch(`${API}/bloqueos`, {
+        await fetch(`${API}/admin/bloqueos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -991,7 +991,7 @@ async function guardarBloqueo() {
 async function eliminarBloqueo(id) {
     if (!confirm('Supprimer ce blocage ?')) return
     try {
-        await fetch(`${API}/bloqueos/${id}`, { method: 'DELETE' })
+        await fetch(`${API}/admin/bloqueos/${id}`, { method: 'DELETE' })
         toast('Blocage supprimé')
         cargarBloqueos()
     } catch(e) { toast('Erreur', 'error') }
